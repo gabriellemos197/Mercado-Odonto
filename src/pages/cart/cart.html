@@ -1,0 +1,137 @@
+<ion-header>
+
+    <ion-navbar hideBackButton="true">
+        <div class="header-wrapper">    
+            <ion-title>{{'cart.title' | translate}}</ion-title>
+        </div>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+    <!-- Empty -->
+    <div class="swipe-bg" (swipe)="onSwipeContent($event)">
+        <div *ngIf="(data|ObjectToArray).length == 0 && checkResuilt" class="cart-empty">
+            <ion-icon font-size-80 name="icon-cart" class="no-item-icon"></ion-icon>
+            <h1>{{'cart.noitem' | translate}}</h1>
+            <span font-size-16>{{'cart.notice' | translate}}</span>
+            <button ion-button class="button-shop" (click)="shop()">{{'cart.shop'|translate}}</button>
+        </div>
+
+        <div *ngIf="0 < (data|ObjectToArray).length" background-gray>
+            <!-- list product-->
+            <ul class="product-shopping-list">
+                <li *ngFor="let product of (data|ObjectToArray)">
+                    <div class="product-shopping">
+                        <div class="product-top">
+                            <div class="product-img" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                                <img *ngIf="product.images" [src]="product.images" />
+                                <img *ngIf="!product.images" src="assets/images/no-image.png" />
+                            </div>
+                            <div class="product-body">
+                                <div *ngIf="product.name" class="product-title" [navPush]="DetailPage" [navParams]="{id:product.id}" [innerHTML]="product.name | truncate:[50]"></div>
+                                <div class="product-attributes">
+                                    <span *ngFor="let attr of (product.attributes|ObjectToArray), let i = index">
+                                        <span *ngIf="(i + 1) !=  (product.attributes|ObjectToArray).length">{{attr.option}}, </span>
+                                        <span *ngIf="(i + 1) ==  (product.attributes|ObjectToArray).length">{{attr.option}}</span>
+                                    </span>
+                                </div>
+                                <!-- <div class="product-price product-price-custom" [innerHTML]="product.price_html"></div> -->
+                                <div class="product-price product-price-custom">
+                                    <span class="new-price">{{ product.price | price }}</span>
+                                    <span class="old-price" *ngIf="product.regular_price != product.price">{{ product.regular_price | price }}</span>
+                                </div>
+                                <div class="product_out_stock" *ngIf="checkOutStock(product)">
+                                    <span class="icomoon-close">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </span>
+                                    {{'cart.out_stock'| translate}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-bottom">
+                            <div class="bottom-left">
+                                <ion-icon (click)="delete(product.idCart)" class="icon-trash-cart" name="icon-trash"></ion-icon>
+                            </div>
+                            <div class="bottom-right">
+                                {{'cart.qty'|translate}}
+                             <!--    <button-quantity [(ngModel)]="data[product.idCart].quantity" *ngIf="!product.max_quantity" (update)="update_cart()"></button-quantity> -->
+                                <button-quantity [(ngModel)]="data[product.idCart].quantity" [max]="product.max_quantity" (update)="update_cart()"></button-quantity>
+                            </div>
+                        </div>
+
+                    </div>
+                </li>
+            </ul>
+            <!-- / .product-shopping-list -->
+
+            <div class="coupon-checkbox-form" [ngClass]="{'active' : checkCoupon}">
+                <div class="coupon-checkbox-title">
+                    <ion-item>
+                        <ion-label>{{'cart.have_coupon' | translate}}</ion-label>
+                        <ion-checkbox [(ngModel)]="checkCoupon"></ion-checkbox>
+                    </ion-item>
+                </div>
+                <form [formGroup]="formCoupon" ng-submit="apply()" *ngIf="checkCoupon">
+                    <div class="coupon-checkbox-content" [ngClass]="{'active': formCoupon.valid}">
+                        <ion-label *ngIf="!formCoupon.controls.code.value">{{'cart.coupon_here'|translate}}</ion-label>
+                        <ion-input type="text" (ionFocus)="coupon_placeholer=false" (ionBlur)="coupon_placeholer=true"
+                            formControlName="code"></ion-input>
+                        <button ion-button class="btn-small" type="submit" (click)="apply()" [disabled]="!formCoupon.valid">
+                            {{'cart.apply'|translate}}
+                        </button>
+                    </div>
+                    <div *ngIf="formCoupon.controls.code.hasError('required') && submitCoupon" class="err-danger">
+                        {{'errorMessage.couponRequired'| translate}}
+                    </div>
+                </form>
+            </div>
+
+            <ion-grid padding background-light class="cart-summary">
+                <ion-row>
+                    <ion-col>{{'cart.total_price'|translate}}</ion-col>
+                    <ion-col text-right *ngIf="subtotal">{{subtotal|price}}</ion-col>
+                </ion-row>
+                <div *ngIf="delivery">
+                    <ion-row>
+                        <ion-col>{{'cart.delivery'|translate}}</ion-col>
+                        <ion-col *ngIf="delivery!=0" text-right>{{delivery.cost|price}}</ion-col>
+                        <ion-col *ngIf="delivery==0" text-right green>{{'cart.free'|translate}}</ion-col>
+                    </ion-row>
+                </div>
+                <ion-row>
+                    <ion-col>{{'cart.tax'|translate}}</ion-col>
+                    <ion-col text-right *ngIf="tax">{{tax|price}}</ion-col>
+                </ion-row>
+                <ion-row *ngFor="let coupon of couponData; let i=index ">
+                    <ion-col class="coupon-item" width-66>
+                        <div class="coupon-info">
+                            <span class="coupon-title">{{'cart.coupon_code'|translate}}</span>
+                            <span class="coupon-des">(
+                                <span class="inline-flex">{{coupon.code}}</span>: -{{coupon.amount}})</span>
+                            <!--         <span class="coupon-des" *ngIf="coupon.amount == '%'">(<span class="inline-flex">{{coupon.code}}</span>)</span> -->
+                            <span class="icomoon-cancel" (click)="remove(i)"></span>
+                        </div>
+                    </ion-col>
+                    <ion-col text-right green width-33>-{{coupon.value|price}}</ion-col>
+                    <!-- <ion-col text-right green *ngIf="coupon.value == 0">{{'checkout.free' | translate}}</ion-col> -->
+                </ion-row>
+                <ion-row class="total-payment">
+                    <ion-col width-66>{{'cart.amount_pay'|translate}}</ion-col>
+                    <ion-col width-33 *ngIf="totalPayment || totalPayment==0" text-right>{{totalPayment | price}}</ion-col>
+                    <!-- <ion-col *ngIf = "(couponData| ObjectToArray).length != 0 && totalPayment" text-right>{{totalPayment|price}}</ion-col> -->
+                </ion-row>
+                <div class="page-submit">
+                    <button ion-button class="form-custom-submit" (click)="gotoAddress()">
+                        {{'cart.checkout'|translate}}
+                    </button>
+                </div>
+            </ion-grid>
+        </div>
+    </div>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

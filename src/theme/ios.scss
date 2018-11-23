@@ -1,0 +1,57 @@
+// fix ios platform
+ion-app.platform-ios {
+    font-family: 'Roboto', sans-serif;
+
+    .toolbar-ios ion-title {
+        padding-top: 0 !important;
+        min-height: 32px !important;
+        height: 32px !important;
+    }
+
+    page-home {
+        .header .toolbar .header-logo {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .content-popover {
+            .list-ios {
+                box-shadow: -4px 4px 6px 0px rgba(153, 153, 153, 0.4);
+            }
+        }
+        
+    }
+
+    ion-menu {
+        .scroll-content {
+            position: absolute !important;
+        }
+    }
+
+    page-order {
+        .order-label-status span {
+            top: 31px;
+        }
+
+        .page-wrapper {
+            padding-bottom: 80px;
+        }
+    }
+    
+    // iphoneX
+    .footer > footer .row,
+    page-detail .detail-footer,
+    .footer-copyright .footer-copyright-title,
+    ion-infinite-scroll {
+        padding-bottom: constant(safe-area-inset-bottom);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .form-custom-submit {
+        margin-bottom: constant(safe-area-inset-bottom);
+        margin-bottom: env(safe-area-inset-bottom);
+    }
+    // end iphoneX
+}
+// end fix ios platform

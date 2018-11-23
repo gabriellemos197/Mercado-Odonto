@@ -1,0 +1,181 @@
+
+page-order {
+    [width-35] {
+        width: 35%;
+    }
+    [width-30] {
+        width: 30%;
+    }
+    [width-70] {
+        width: 70%;
+    }
+    [background-red] {
+        background: red;
+    }
+    [order-color] {
+        color: #acb0b6;
+    }
+
+    .page-loading {
+        z-index: 1;
+    }
+
+    .header {
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-wrapper {
+        padding-bottom: 50px;
+    }
+
+    &.ion-page > ion-content {
+        position: relative;
+        z-index: 3;
+        top: -3px;
+
+        overflow: auto;
+
+        &:before {
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 3px;
+
+            content: '';
+
+            background: $background-primary;
+        }
+
+        &.page-empty {
+            top: 0;
+
+            &:before {
+                display: none;
+            }
+
+             > .scroll-content {
+                padding-top: 0;
+            }
+        }
+
+
+        &[scroll='true'] {
+            z-index: 1;
+        }
+
+         > .scroll-content {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding-top: 3px;
+            // overflow: visible;
+        }
+
+        ion-refresher {
+            top: 0 !important;
+        }
+        .refresher-refreshing {
+            display: none !important;
+        }
+    }
+
+    .order-wrapper > .row {
+        position: relative;
+
+        margin-bottom: 7px;
+        padding: 16px 16px 4px;
+
+        border-bottom: solid 1px $border-slight-gray;
+        background: #fff;
+
+        &:not(:first-child):after {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 1px;
+
+            content: '';
+
+            background: $border-slight-gray;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .order-id {
+            font-weight: 500;
+
+            display: flex;
+
+            margin-bottom: 10px;
+
+            text-transform: uppercase;
+        }
+
+        .order-info {
+            font-size: 1.5rem;
+            font-weight: 500;
+
+            margin-bottom: 8px;
+
+            &.info-arrow {
+                display: flex;
+                overflow: hidden;
+
+                white-space: nowrap;
+                text-overflow: ellipsis;
+
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+    }
+
+    .order-go {
+        font-size: 1rem;
+
+        position: relative;
+
+        color: $color-light-gray;
+    }
+
+    .order_empty {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        margin-top: -30px;
+
+        transform: translate(-50%, -50%);
+        text-align: center;
+
+
+        .order_empty_title {
+            font-size: 1.6rem;
+
+            padding: 5px 0 15px;
+        }
+
+        .order_emtpy_img {
+            img {
+                width: 95px;
+            };
+        }
+
+        .button {
+            height: 4rem;
+            padding: 0 18px;
+
+            text-transform: uppercase;
+
+            border-radius: 2px;
+        }
+    }
+}

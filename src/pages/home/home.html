@@ -1,0 +1,443 @@
+<ion-header>
+    <ion-navbar>
+        <div class="header-wrapper">
+            <button ion-button menuToggle margin-0>
+                <ion-icon class="header-bar" name="icon-untitled-1"></ion-icon>
+            </button>
+            <div class="header-logo"><img src="assets/images/logo.png" /></div>
+            <!-- <ion-buttons end> -->
+            <button class="header-widget" ion-button (click)="showWidget()">
+                <ion-icon #menu_control name="md-more"></ion-icon>
+            </button>
+            <!-- </ion-buttons> -->
+        </div>
+    </ion-navbar>
+    <div relative>
+        <ion-searchbar background-primary placeholder="{{'search.title'|translate}}" [(ngModel)]="keyword" (keyup.enter)="search()"></ion-searchbar>
+    </div>
+    
+    <div class="widget-wrapper" [ngClass]="{'active': show_widget}">
+        <div class="widget-overlay" (click)="showWidget()"></div>
+        <div class="content-popover header-menu-content" 
+        [ngStyle]="{'top': menu_pos_top, 'right': menu_pos_right}">
+            <ion-list>
+              <ion-item (click)="show_widget=false" [navPush]="AboutusPage">{{'account.about_us' | translate}}</ion-item>
+              <ion-item (click)="show_widget=false" [navPush]="ContactusPage">{{'account.contact_us' | translate}}</ion-item>
+              <ion-item (click)="shareApp();show_widget=false">{{'account.app_share' | translate}}</ion-item>
+              <ion-item (click)="rateApp();show_widget=false">{{'account.rate_us' | translate}}</ion-item>
+              <ion-item (click)="show_widget=false" [navPush]="TermPage">{{'account.terms_of_use' | translate}}</ion-item>
+              <ion-item (click)="show_widget=false" [navPush]="PrivacyPage">{{'account.privacy_policy' | translate}}</ion-item>
+            </ion-list>
+        </div>
+    </div>
+    
+</ion-header>
+<div class="popup-homepage" *ngIf="popup_homepage">
+    <div class="popup-overlay"></div>
+    <div class="popup-img">
+        <span class="icomoon-close-thin" (click)="closePopupHome()"></span>
+        <img src="{{popup_homepage.popup}}" (click)="openLink(popup_homepage.link_popup)" />
+    </div>
+</div>
+
+<ion-content [@fadeIn]="''" [ngClass]="{'no-scroll': !page_allow_scroll}">
+	<ion-refresher class="home-refreshing" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content
+            pullingIcon="ios-refresh"
+            pullingText=""
+            refreshingSpinner="circles"
+            refreshingText="">
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-spinner *ngIf="!loaded_slides" name="ios" class="spinner-loading"></ion-spinner>
+    <ion-slides [@fadeIn]="''" #slides_banner *ngIf="slides && 0<slides.length" class="slides-home" pager="true" autoplay="{{slide_period}}" dir="{{dir_mode}}" (ionSlideDidChange)="changeSlides($event)">
+        <ion-slide *ngFor="let slide of slides">
+            <img (click)="openLink(slide.url)" [src]="slide.slider_images" [title]="slide.caption" />
+        </ion-slide>
+    </ion-slides>
+    <!-- / .slides-home -->
+
+    <div class="home-features" (swipe)="onSwipeContent($event)">
+        <div class="home-feature" [navPush]="GetallNewproductPage" 
+            [navParams]="{enpoint: 'hot', title:'home.hot_title'|translate}">
+            <div class="icon-feature"><img src="assets/images/hot.png" /></div>
+            <span>{{'home.hot' | translate}}</span>
+        </div>
+        <div class="home-feature" [navPush]="GetallNewproductPage" 
+            [navParams]="{enpoint: 'getbestviews', title:'home.trend_title'|translate}">
+            <div class="icon-feature"><img src="assets/images/trend.png" /></div>
+            <span>{{'home.trend' | translate}}</span>
+        </div>
+        <div class="home-feature" [navPush]="GetallNewproductPage" 
+            [navParams]="{enpoint: 'getproductonsale', title: 'home.sale_title'|translate}">
+            <div class="icon-feature"><img src="assets/images/sale.png" /></div>
+            <span>{{'home.sale' | translate}}</span>
+        </div>
+        <div class="home-feature" [navPush]="GetallNewproductPage" 
+            [navParams]="{enpoint: 'getbestsales', title: 'home.selling_title'|translate}">
+            <div class="icon-feature"><img src="assets/images/selling.png" /></div>
+            <span>{{'home.selling' | translate}}</span>
+        </div>
+    </div>
+    <!-- / .home-features -->
+
+    <div *ngIf="textStatic.cellstore_notice_home_1" class="home-notice" (swipe)="onSwipeContent($event)">
+        <img src="assets/images/notification.png" />
+        <div light-gray [innerHTML]="textStatic.cellstore_notice_home_1"></div>
+    </div>
+    <!-- / .home-notice -->
+
+    <div [@fadeIn]="''" *ngIf="textStatic.cellstore_adverticing_image" class="home-banner" (swipe)="onSwipeContent($event)">
+        <img [src]="textStatic.cellstore_adverticing_image" />
+    </div>
+
+    <div class="section-title-wrapper" *ngIf="0<deal.length" (swipe)="onSwipeContent($event)">
+        <span class="icomoon-catalog cate-icon"></span>
+        <span class="section-title">{{'home.deals' | translate}}</span>
+    </div>
+    <ion-spinner *ngIf="!loaded_deal" name="ios" class="spinner-loading"></ion-spinner>
+    <div *ngIf="0<deal.length" class="product-deal-wrapper" [ngClass]="{'hidden-top': !checkTopInfo(deal)}" (swipe)="onSwipeContent($event)">
+        <ion-row class="deal-info">
+            <ion-col [@fadeIn]="''" col-6 no-padding *ngFor="let product of deal">
+                <div class="deal-top" *ngIf="dir_mode!='rtl'">
+                    <div class="deal-percent" *ngIf="product.price <  product.regular_price 
+                        && product.type!='variable' && product.type!='grouped'">
+                        <span class="icomoon-label"></span>{{'home.upto' | translate}}
+                        <b>{{((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</b>
+                        {{'home.off' | translate}}
+                    </div>
+                    <div *ngIf="product.time_diff && product.upcomming" class="deal-time">
+                        {{ 'home.upcomming'|translate }} {{ product.time_diff|timeRemain }}
+                    </div>
+                    <div *ngIf="product.time_diff && !product.upcomming" class="deal-time">
+                        {{ 'home.remaining'|translate }} {{ product.time_diff|timeRemain }}
+                    </div>
+                </div>
+                <div class="deal-top" *ngIf="dir_mode=='rtl'">
+                    <div class="deal-percent" *ngIf="product.price <  product.regular_price 
+                        && product.type!='variable' && product.type!='grouped'">
+                        {{'home.off' | translate}}
+                        <b>{{((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</b>
+                        {{'home.upto' | translate}}<span class="icomoon-label"></span>
+                    </div>
+                    <div *ngIf="product.time_diff && product.upcomming" class="deal-time">
+                        {{ 'home.upcomming'|translate }} <span class="inline-flex">{{ product.time_diff|timeRemain }}</span> 
+                    </div>
+                    <div *ngIf="product.time_diff && !product.upcomming" class="deal-time">
+                        {{ 'home.remaining'|translate }} <span class="inline-flex">{{ product.time_diff|timeRemain }}</span> 
+                    </div>
+                </div>
+            </ion-col>
+        </ion-row>
+        <ion-row class="deal-content">
+            <ion-col col-6 no-padding *ngFor="let product of deal">
+                <div class="product-small product-deal">
+                    <div class="product-top" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                        <img  *ngIf="product.cellstore_images && product.cellstore_images[0].cellstore_square" [src]="product.cellstore_images[0].cellstore_square" />
+                        <img *ngIf="!product.cellstore_images || !product.cellstore_images[0].cellstore_square" src="assets/images/no-image.png" />
+                    </div>
+                    <div class="product-price">
+                        <span class="new-price" [innerHTML]="product.price_html"></span>
+                    </div>
+                    <div class="product-name" [navPush]="DetailPage" [navParams]="{id:product.id}" 
+                        [innerHTML]="product.name | truncate:[30]"></div>
+                    <div class="product-info" [ngClass]="{'hide-sale': hide_sale}" *ngIf=" product.average_rating || product.total_sales">
+                        <div class="product-rating" [ngClass]="{'hidden': product.average_rating==''}">
+                            <ion-icon name="icon-star" class="text-orange"></ion-icon>
+                            <span class="text-orange" *ngIf="product.average_rating">{{product.average_rating |number:'1.1-1'}}</span>
+                        </div>
+                        <div class="product-sold" [ngClass]="{'hidden': product.total_sales==''}">
+                            <span class="product-total-sold" *ngIf="product.total_sales">{{product.total_sales}}{{'home.sold' | translate}}</span>
+                        </div>
+                    </div>
+                    <div class="product-bottom">
+                        <div class="product-action" *ngIf="(product.in_stock && product.stock_quantity == null) || (product.in_stock && product.stock_quantity > 0) || product.backordered">
+                            <button *ngIf="product.type == 'simple'" (click)="quickAddCart(product, $event)" class="action-type action-cart">
+                                <span class="icomoon-cart-add"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                                {{'general.addToCart' | translate}}
+                            </button>
+                            <button *ngIf="product.type != 'simple'" [navPush]="DetailPage" [navParams]="{id:product.id}"
+                                class="action-type action-choose">
+                                {{'general.chooseOption' | translate}}
+                            </button>
+                            <span [ngClass]="{'active': inCart(product.id, cart)}" class="icomoon-cart-check"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></span>
+                        </div>
+                    </div>
+                </div> 
+                <!-- / .product-small -->
+            </ion-col>
+        </ion-row>
+    </div>
+    <!-- / .product-deal-wrapper -->
+
+    <div class="section-title-wrapper" [ngClass]="{'border-t1': 0<deal.length}" (swipe)="onSwipeContent($event)">
+        <span class="icomoon-catalog cate-icon"></span>
+        <span class="section-title">{{'home.recently' | translate}}</span>
+    </div>
+    <ion-spinner *ngIf="!loaded_bestsale" name="ios" class="spinner-loading"></ion-spinner>
+    <div *ngIf="bestsale && 0<bestsale.length" class="recent-sold-wrapper">
+        <div class="scroll-container" [ngStyle]="{'width': recent_sold_width}">
+            <div [@fadeIn]="''" class="product-inline" *ngFor="let product of bestsale">
+                <div class="product-small product-recent-sold">
+                    <div *ngIf="product.date_created_gmt | isNew" class="new-label">
+                    <span>{{ 'home.new'|translate}}</span></div>
+                    <div class="sale-label" *ngIf="product.price < product.regular_price
+                        && product.type!='variable' && product.type!='grouped'">
+                        {{-((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</div>
+                    <div class="product-top" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                        <img *ngIf="product.cellstore_images && product.cellstore_images[0].cellstore_square" [src]="product.cellstore_images[0].cellstore_square" />
+                        <img *ngIf="!product.cellstore_images || !product.cellstore_images[0].cellstore_square" src="assets/images/no-image.png" />
+                    </div>
+                    <div class="product-price">
+                        <span class="new-price" [innerHTML]="product.price_html"></span>
+                    </div>
+                    <div class="product-name" [navPush]="DetailPage" [navParams]="{id:product.id}"
+                        [innerHTML]="product.name | truncate:[30]"></div>
+                    <div class="product-info" [ngClass]="{'hide-sale': hide_sale}" *ngIf=" product.average_rating || product.total_sales">
+                        <div class="product-rating" [ngClass]="{'hidden': product.average_rating==''}">
+                            <ion-icon name="icon-star" class="text-orange"></ion-icon>
+                            <span class="text-orange" *ngIf="product.average_rating">{{product.average_rating |number:'1.1-1'}}</span>
+                        </div>
+                        <div class="product-sold" [ngClass]="{'hidden': product.total_sales==''}">
+                            <span class="product-total-sold" *ngIf="product.total_sales">{{product.total_sales}}{{'home.sold' | translate}}</span>
+                        </div>
+                    </div>
+                    <div class="product-bottom">
+                        <div class="product-action" *ngIf="(product.in_stock && product.stock_quantity == null) || (product.in_stock && product.stock_quantity > 0) || product.backordered">
+                            <button *ngIf="product.type == 'simple'" (click)="quickAddCart(product, $event)" class="action-type action-cart">
+                                <span class="icomoon-cart-add"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                                {{'general.addToCart' | translate}}
+                            </button>
+                            <button *ngIf="product.type != 'simple'" [navPush]="DetailPage" [navParams]="{id:product.id}"
+                                class="action-type action-choose">
+                                {{'general.chooseOption' | translate}}
+                            </button>
+                            <span [ngClass]="{'active': inCart(product.id, cart)}" class="icomoon-cart-check"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></span>
+                        </div>
+                    </div>
+                </div> 
+                <!-- / .product-small -->
+            </div>
+        </div>
+    </div>
+    <!-- / .recent-sold-wrapper -->
+
+    <div class="section-title-wrapper border-t1" (swipe)="onSwipeContent($event)">
+        <span class="icomoon-catalog cate-icon"></span>
+        <span class="section-title">{{'home.newproduct' | translate}}</span>
+    </div>
+    <ion-spinner *ngIf="!loaded_newProduct" name="ios" class="spinner-loading"></ion-spinner>
+    <div *ngIf = "newProduct && 0 < newProduct.length" class="new-product-wrapper" (swipe)="onSwipeContent($event)">
+        <ion-row border-bottom-solid-1>
+            <ion-col [@fadeIn]="''" col-6 no-padding border-block-product *ngFor="let product of newProduct">
+                <div class="product-small">
+                    <div *ngIf="product.date_created_gmt | isNew" class="new-label">
+                    <span>{{ 'home.new'|translate}}</span></div>
+                    <div class="sale-label" *ngIf="product.price < product.regular_price
+                        && product.type!='variable' && product.type!='grouped'">
+                        {{-((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</div>
+                    <div class="product-top" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                        <img *ngIf="product.cellstore_images && product.cellstore_images[0].cellstore_square" [src]="product.cellstore_images[0].cellstore_square" />
+                        <img *ngIf="!product.cellstore_images || !product.cellstore_images[0].cellstore_square" src="assets/images/no-image.png" />
+                    </div>
+                    <div class="product-price">
+                        <span class="new-price" [innerHTML]="product.price_html"></span>
+                    </div>
+                    <div class="product-name" [navPush]="DetailPage" [navParams]="{id:product.id}"
+                        [innerHTML]="product.name | truncate:[30]"></div>
+                    <div class="product-info" [ngClass]="{'hide-sale': hide_sale}" *ngIf=" product.average_rating || product.total_sales">
+                        <div class="product-rating" [ngClass]="{'hidden': product.average_rating==''}">
+                            <ion-icon name="icon-star" class="text-orange"></ion-icon>
+                            <span class="text-orange" *ngIf="product.average_rating">{{product.average_rating |number:'1.1-1'}}</span>
+                        </div>
+                        <div class="product-sold" [ngClass]="{'hidden': product.total_sales==''}">
+                            <span class="product-total-sold" *ngIf="product.total_sales">{{product.total_sales}}{{'home.sold' | translate}}</span>
+                        </div>
+                    </div>
+                    <div class="product-bottom">
+                        <div class="product-action" *ngIf="(product.in_stock && product.stock_quantity == null) || (product.in_stock && product.stock_quantity > 0) || product.backordered">
+                            <button *ngIf="product.type == 'simple'" (click)="quickAddCart(product, $event)" class="action-type action-cart">
+                                <span class="icomoon-cart-add"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                                {{'general.addToCart' | translate}}
+                            </button>
+                            <button *ngIf="product.type != 'simple'" [navPush]="DetailPage" [navParams]="{id:product.id}"
+                                class="action-type action-choose">
+                                {{'general.chooseOption' | translate}}
+                            </button>
+                            <span [ngClass]="{'active': inCart(product.id, cart)}" class="icomoon-cart-check"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></span>
+                        </div>
+                    </div>
+                </div> 
+                <!-- / .product-small -->
+            </ion-col>
+        </ion-row>
+        <button ion-button class="link-more" block [navPush]="GetallNewproductPage" 
+            [navParams]="{enpoint: 'getproduct', title: 'home.newproduct' | translate}">{{'home.viewAll'|translate}}</button>
+    </div>
+    <!-- / .new-product-wrapper -->
+
+    <div class="section-title-wrapper border-t1" (swipe)="onSwipeContent($event)">
+        <span class="icomoon-catalog cate-icon"></span>
+        <span class="section-title cate-title">
+        {{'home.categories' | translate}}
+            <div class="cate-options" light-gray (click)="showProductCategori()">
+                <span *ngIf="id_catdefault == 0" class="cate-option" >- {{'home.all'|translate}}</span>
+                <span *ngIf="id_catdefault != 0" class="cate-option" [innerHTML]="'- '+catName"></span>
+                <span class="icomoon-arrow-down"></span>
+            </div>
+        </span>
+    </div>
+    <ion-spinner *ngIf="!loadedProducts" name="ios" class="spinner-loading"></ion-spinner>
+    <div *ngIf="products && 0 < products.length" class="product-cate-wrapper" (swipe)="onSwipeContent($event)">
+        <ion-row border-bottom-solid-1>
+            <ion-col [@fadeIn]="''" col-6 no-padding border-block-product *ngFor="let product of products">
+                <div class="product-small">
+                    <div *ngIf="product.date_created_gmt | isNew" class="new-label">
+                    <span>{{ 'home.new'|translate}}</span></div>
+                    <div class="sale-label" *ngIf="product.price < product.regular_price
+                        && product.type!='variable' && product.type!='grouped'">
+                        {{-((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</div>
+                    <div class="product-top" [navPush] = "DetailPage" [navParams]="{id:product.id}">
+                        <img *ngIf="product.cellstore_images && product.cellstore_images[0].cellstore_square" [src]="product.cellstore_images[0].cellstore_square" />
+                        <img *ngIf="!product.cellstore_images || !product.cellstore_images[0].cellstore_square" src="assets/images/no-image.png" />
+                    </div>
+                    <div class="product-price">
+                        <span class="new-price" [innerHTML]="product.price_html"></span>
+                    </div>
+                    <div class="product-name"  [navPush] = "DetailPage" [navParams]="{id:product.id}"
+                        [innerHTML]="product.name | truncate:[30]"></div>
+                    <div class="product-info" [ngClass]="{'hide-sale': hide_sale}" *ngIf=" product.average_rating || product.total_sales">
+                        <div class="product-rating" [ngClass]="{'hidden': product.average_rating==''}">
+                            <ion-icon name="icon-star" class="text-orange"></ion-icon>
+                            <span class="text-orange" *ngIf="product.average_rating">{{product.average_rating |number:'1.1-1'}}</span>
+                        </div>
+                        <div class="product-sold" [ngClass]="{'hidden': product.total_sales==''}">
+                            <span class="product-total-sold" *ngIf="product.total_sales">{{product.total_sales}}{{'home.sold' | translate}}</span>
+                        </div>
+                    </div>
+                    <div class="product-bottom">
+                        <div class="product-action" *ngIf="(product.in_stock && product.stock_quantity == null) || (product.in_stock && product.stock_quantity > 0) || product.backordered">
+                            <button *ngIf="product.type == 'simple'" (click)="quickAddCart(product, $event)" class="action-type action-cart">
+                                <span class="icomoon-cart-add"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                                {{'general.addToCart' | translate}}
+                            </button>
+                            <button *ngIf="product.type != 'simple'" [navPush]="DetailPage" [navParams]="{id:product.id}"
+                                class="action-type action-choose">
+                                {{'general.chooseOption' | translate}}
+                            </button>
+                            <span [ngClass]="{'active': inCart(product.id, cart)}" class="icomoon-cart-check"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></span>
+                        </div>
+                    </div>
+                </div> 
+                <!-- / .product-small -->
+            </ion-col>
+        </ion-row>
+        <button ion-button class="link-more" block [navPush]="DetailcategoryPage" 
+            [navParams]="{id:id_catdefault, name:catName}">{{'home.viewAll'|translate}}</button>
+    </div>
+    <!-- / .product-cate-wrapper -->
+
+    <div *ngIf="textStatic.cellstore_title_service_1 || textStatic.cellstore_content_services_2">
+        <div class="section-title-wrapper border-t1" (swipe)="onSwipeContent($event)">
+            <span class="icomoon-catalog cate-icon"></span>
+            <span class="section-title">{{'home.ourservice' | translate}}</span>
+        </div>
+        <div class="home-service-wrapper">
+            <div class="scroll-x-container">
+                <div class="home-service" *ngIf="textStatic.cellstore_title_service_1 || textStatic.cellstore_content_services_1">
+                    <div class="home-service-content">
+                        <img src="assets/images/service1.png" />
+                        <div class="service-content">
+                            <div *ngIf="textStatic.cellstore_title_service_1" class="service-title" [innerHTML]="textStatic.cellstore_title_service_1"></div>
+                            <span *ngIf="textStatic.cellstore_content_services_1" [innerHTML]="textStatic.cellstore_content_services_1" light-gray></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="home-service" *ngIf="textStatic.cellstore_title_services_2 || textStatic.cellstore_content_services_2">
+                    <div class="home-service-content">
+                        <img src="assets/images/service2.png" />
+                        <div class="service-content">
+                                <div *ngIf="textStatic.cellstore_title_service_2" class="service-title" [innerHTML]="textStatic.cellstore_title_service_2"></div>
+                                <span *ngIf="textStatic.cellstore_content_services_2" [innerHTML]="textStatic.cellstore_content_services_2" light-gray></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- / .service-wrapper -->
+    </div>
+  
+
+    <div class="client-say" *ngIf="clientSay" [style.background-image]="'url(' + textStatic.cellstore_clientsay_image + ')'">
+        <div class="client-say-title" *ngIf="clientSay.length > 0">{{'home.client_say' | translate}}</div>
+        <ion-slides [@fadeIn]="''" #slides_client pager="true" class="slides-client-say" dir="{{dir_mode}}">
+            <ion-slide *ngFor="let slide of clientSay">
+                <div class="client-say-content">
+                    &ldquo;{{slide.comment_content|truncate:[90]}}&rdquo;
+                </div>
+                <div class="block-info">
+                    <span class="name_user" [innerHTML]="slide.user"></span>
+                    <span light class="inline-flex" [innerHTML]="' - '+(slide.comment_date_gmt|timeAgo)"></span>
+                    <img class="avatar-user" [src]="slide.link_avatar" />
+                </div>
+            </ion-slide>
+        </ion-slides>
+    </div>
+    <!-- / .client-say -->
+
+    <div *ngIf="textStatic.cellstore_partner_images.length > 0">
+        <div class="section-title-wrapper" (swipe)="onSwipeContent($event)">
+            <span class="icomoon-catalog cate-icon"></span>
+            <span class="section-title">{{'home.working_with' | translate}}</span>
+        </div>
+        <div class="working-with">  
+            <div class="working-with-wrapper">
+                <div class="scroll-x-container">
+                    <div class="block-working" *ngFor="let img of textStatic.cellstore_partner_images">
+                        <img [src]="img.images" />
+                    </div>
+                </div>
+            </div> 
+        </div>
+        <!-- / .working-with -->
+    </div>
+   
+    <div class="footer-block border-t1" (swipe)="onSwipeContent($event)">
+        <ion-row>
+            <ion-col>
+                <img width-50 src="assets/images/logo-footer.png" />
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col><span secondary [innerHTML]="textStatic.cellstore_footer_welcome_title"></span></ion-col>
+        </ion-row>
+        <ion-row *ngIf="textStatic.cellstore_footer_welcome_phone">
+            <ion-col col-1><span class="icomoon-phone"></span></ion-col>
+            <ion-col col><span light-gray [innerHTML]="textStatic.cellstore_footer_welcome_phone"></span></ion-col>
+        </ion-row>
+        <ion-row *ngIf="textStatic.cellstore_footer_welcome_mail">
+            <ion-col col-1><span class="icomoon-envelope"></span></ion-col>
+            <ion-col col><span light-gray [innerHTML]="textStatic.cellstore_footer_welcome_mail"></span></ion-col>
+        </ion-row>
+        <ion-row *ngIf="textStatic.cellstore_footer_welcome_addres">
+            <ion-col col-1><span class="icomoon-location"></span></ion-col>
+            <ion-col col><span light-gray [innerHTML]="textStatic.cellstore_footer_welcome_addres"></span></ion-col>
+        </ion-row>
+    </div>
+    <!-- / .footer-block -->
+
+    <div class="footer-copyright" (swipe)="onSwipeContent($event)">
+        <div class="footer-payment" *ngIf="textStatic.cellstore_footer_payment_method">
+            <img src="{{textStatic.cellstore_footer_payment_method}}" />
+        </div>
+        <div class="footer-copyright-title" [innerHTML]="textStatic.cellstore_footer_welcome_copyright"></div>
+    </div>
+
+</ion-content>
+
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>
+
+

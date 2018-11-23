@@ -1,0 +1,125 @@
+
+$font-path: "../assets/fonts";
+
+@import "ionic.globals";
+
+$colors: (
+  primary:    #2b84e6,
+  secondary:  #333e48,
+  danger:     #f53d3d,
+  light:      #fff,
+  dark:       #222,
+  black:      #000,
+  text_signup: #aeb0b6,
+  gray: #74757a,
+  red: #ff0033,
+);
+@each $color in $colors{
+	$key: nth($color, 1);
+	$value: nth($color, 2);
+	[#{$key}]{color:$value;};
+	[#{$key}-bg]{background-color:$value!important;}
+}
+
+$color-light-gray: #90949c;
+$color-gray: #74757a;
+$color-lighter-gray: #bcbcbc;
+$color-default-gray: #333e48;
+$color-gray-1: #8e8e8e;
+$color-gray-2: #444549;
+$color-gray-3: #90949c;
+$color-primary: #2196f3;
+$color-strong-primary: #2b84e6;
+$color-orange: #fdb500;
+$color-light-orange: #feb500;
+$color-danger: #f53d3d;
+$color-red: #ff0033;
+$color-dark: #000;
+$color-lighter-dark: #444;
+$color-strong-orange: #ff5600;
+$color-footer-gray: #818e95;
+$color-yellow: #fffc00;
+$color-green: #07f70f;
+
+
+$border-gray: #bdbdbd;
+$border-slight-gray: #dedede;
+$border-slighter-gray: #ececed;
+$border-light-gray: #eee;
+$border-lighter-gray: #90949c;
+$border-primary: #2196f3;
+$border-strong-gray: #74757a;
+$border-pink: #ffb2c1;
+$border-danger: #f53d3d;
+
+$background-white: #fff;
+$background-slight-gray: #ccc;
+$background-gray: #f5f7f9;
+$background-light-gray: #bcbcbc;
+$background-lighter-gray: #90949c;
+$background-default-gray: #f3f3f3;
+$background-strong-gray: #999;
+$background-red: #ff0033;
+$background-stronger-red: #9d0f0b;
+$background-stronger-gray: #e6e7e9;
+$background-primary: #2b84e6;
+$background-light-primary: #39a3ca;
+// $background-lighter-primary: #2b84e6;
+$background-green: #77a530;
+$background-stronger-green: #339933;
+$background-blue-green: #d0c035;
+$background-orange: #fdb82b;
+$background-stronger-orange: #ff6600;
+$background-yellow: #fbe106;
+
+$toolbar-background: #fff;
+$tabs-background: #fff;
+$tabs-md-tab-font-size: 11px;
+$tabs-md-tab-opacity: 1;
+$tabs-tab-color-inactive: #000;
+$text-color: #5a5a5a;
+$toolbar-md-button-color: #000;
+$toast-md-background: #f0f0f0;
+$toast-md-title-color: #333e48;
+$toast-ios-background: #f0f0f0;
+$toast-ios-title-color: #333e48;
+$button-md-text-transform: none;
+$alert-md-background-color: #fff;
+$alert-md-message-text-color: #000;
+$list-md-border-color: #f3f3f3;
+
+$variable-item-categories-height: 213px;
+$variable-item-categories-margin: 5px;
+$variable-product-status-detail: 25px;
+@import "ionic.theme.default";
+$range-ios-knob-width: 28px !default;
+$range-md-knob-width: 28px !default;
+$range-ios-knob-height: 28px !default;
+$range-md-knob-height: 28px !default;
+
+$searchbar-ios-toolbar-input-background: #fff;
+$searchbar-ios-background-color: #fff !default;
+$searchbar-ios-input-background-color: #fff !default;
+$searchbar-ios-input-placeholder-color: #999;
+$searchbar-ios-input-search-icon-color: #999;
+$searchbar-ios-input-clear-icon-color: #999;
+$popover-ios-border-radius: 5px !default;
+$toolbar-ios-title-text-align: center !default;
+
+$refresher-icon-color: $color-light-gray;
+
+
+
+// Ionicons
+// --------------------------------------------------
+// The premium icon font for Ionic. For more info, please see:
+// http://ionicframework.com/docs/v2/ionicons/
+
+@import "ionic.ionicons";
+
+
+// Fonts
+// --------------------------------------------------
+
+@import "roboto";
+@import "noto-sans";

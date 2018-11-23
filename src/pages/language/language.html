@@ -1,0 +1,25 @@
+<div class="modal-wrap">
+  <div class="modal-confirm small-header">
+    <div class="modal-title">
+      {{'setting.language_select' | translate}}
+    </div>
+    <div class="modal-confirm-body">
+      <ion-list radio-group class="modal-list" [(ngModel)]="lang">
+        <div *ngFor="let item of list; let i = index">
+          <button ion-item class="radio-custom" (click)="lang_index=i;lang=item.language">
+            <ion-radio [value]="item.language"></ion-radio>
+            <ion-label [innerHTML]="item.name"></ion-label>
+          </button>
+        </div>
+      </ion-list>
+    </div>
+    <div class="modal-confirm">
+      <button ion-button class="modal-cancel" (click)="dismiss()">
+        {{'general.cancel' | translate}}
+      </button>
+      <button ion-button class="modal-ok" (click)="confirm()">
+        {{'general.done' | translate}}
+      </button>
+    </div>
+  </div>
+</div>

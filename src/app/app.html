@@ -1,0 +1,84 @@
+<ion-menu [content]="content" (ionOpen)="menuOpened()" persistent="false" class="selectable">
+    <ion-header class="category-header-title">
+        <ion-navbar>
+            <div class="header-wrapper">
+                <button ion-button menuToggle class="cate-sidebar-close">
+                    <ion-icon light name="md-close"></ion-icon>
+                </button>
+                <ion-title>{{'categories.title' | translate}}</ion-title>
+            </div>
+        </ion-navbar>
+    </ion-header>
+
+    <ion-content>
+        <ion-spinner *ngIf="!loaded_cate" name="ios" class="spinner-loading"></ion-spinner>
+        <ion-scroll width-100 height-100 mark scrollY="true">
+            <div *ngIf="loaded_cate && 0 < parents.length">
+                <ion-grid class="category-sidebar">
+                    <div *ngFor="let item of parents" [@fadeIn]="''">
+                        <div class="cate-row" *ngIf="item.name" (click)="checkOpen(item.id)" [ngClass]="{'active-categories':check_id[item.id]}">
+                            <div class="cate-image">
+                                <div class="cate-img" [ngClass]="{'no-img': !item.cellstore_images_categories}">
+                                    <img *ngIf="item.cellstore_images_categories" [src]="item.cellstore_images_categories.cellstore_square" />
+                                </div>
+                            </div>
+                            <div class="category-sidebar-name">
+                                <span class="name-categories" [innerHtml]="item.name"></span>
+                            </div>
+                            <div class="">
+                                <span *ngIf="!check_id[item.id]" class="icomoon-plus icon-categories"></span>
+                                <span *ngIf="check_id[item.id]" class="icomoon-substract icon-categories icon-active"></span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="check_id[item.id]" class="active-child-categories" border-bottom-solid-1>
+                            <ion-row menuToggle class="child-categories" (click)="openPage(DetailcategoryPage, item.id, item.name)">
+                                <ion-col col-10 text-overflow>{{'general.viewallcategory'|translate}}
+                                    <span [innerHtml]="item.name"></span>
+                                </ion-col>
+                                <ion-col col-2>
+                                    <span class="icomoon-right-arrow"></span>
+                                </ion-col>
+                            </ion-row>
+
+                            <div menuToggle *ngFor="let child of item.wooconnector_categories_childrens" secondary>
+                                <div *ngIf="child.name">
+                                    <ion-row class="child-categories" (click)="openPage(DetailcategoryPage, child.id, child.name)">
+                                        <ion-col col-10 text-overflow>
+                                            <span [innerHtml]="child.name"></span>
+                                        </ion-col>
+                                        <ion-col col-2>
+                                            <span class="icomoon-right-arrow"></span>
+                                        </ion-col>
+                                    </ion-row>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ion-grid>
+            </div>
+        </ion-scroll>
+    </ion-content>
+
+</ion-menu>
+
+<div class="full-spinner" [ngClass]="{'active': !isLoaded}">
+    <ion-spinner name="ios"></ion-spinner>
+</div>
+
+<div *ngIf="isLoaded && disconnect" class="disconnect-msg">
+    {{'general.disconnect'|translate}}
+</div>
+
+
+<!-- <div class="maintain-wrapper" *ngIf="maintain">
+    <div class="image">
+        <img src="assets/images/maintainance.jpg" alt="">
+    </div>
+    <div class="title">{{'maintainance.title' | translate }}</div>
+    <div class="msg">{{'maintainance.message' | translate }}</div>
+    <div class="btn-exit" (click)="exitApp()">{{'maintainance.exit' | translate }}</div>
+</div> -->
+
+<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>

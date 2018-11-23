@@ -1,0 +1,309 @@
+page-orderdetail {
+    .shipping-box {
+        margin-bottom: 7px;
+    }
+
+    .order-top-title {
+        display: flex;
+        justify-content: center;
+    }
+
+    .toolbar-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+
+        .order-top-subtitle {
+            opacity: 0.6;
+            font-size: 12px;
+            font-weight: 400;
+            direction: ltr;
+        }
+    }
+
+    .header {
+        z-index: 2;
+        position: relative;
+    }
+
+    &.ion-page > ion-content {
+        position: relative;
+        z-index: 3;
+        overflow: auto;
+        top: -3px;
+
+        &:before {
+            background: $background-primary;
+            height: 3px;
+            left: 0;
+            top: 0;
+            content: '';
+            width: 100%;
+            position: absolute;
+            z-index: -1;
+        }
+
+        &[scroll='true'] {
+            z-index: 1;
+        }
+
+        > .scroll-content {
+            margin-top: 0 !important;
+            padding-top: 3px;
+            margin-bottom: 0 !important;
+        }
+    }
+
+    .payment-bank {
+        padding: 0 10px;
+        font-size: 1.5rem;
+        border: solid 1px $border-light-gray;
+        margin-top: 7px;
+
+        ul {
+            list-style-type: none;
+            padding: 10px 0;
+            margin: 0;
+
+            &:not(:first-child) {
+                border-top: solid 1px $border-light-gray;
+            }
+
+            li {
+                &:not(:last-child) {
+                    margin-bottom: 2px;
+                }
+                
+                span {
+                    display: inline-block;
+                    color: $color-light-gray;
+                    width: 130px;
+                }
+            }
+        }
+    }
+
+    .order-label-status {
+        width: 100px;
+        height: 83px;
+
+        span {
+            font-size: 12px;
+            padding: 5px 0 5px 3px;
+            width: 120px;
+            left: 7px;
+            top: 22px;
+        }
+    }
+
+	.product-quantity .col{
+		span:first-child {
+			margin-right: 10px;
+		}
+	}
+
+	.block-subtotal {
+		padding: 10px 16px 16px;
+	}
+
+	.order-notes {
+		ion-icon {margin-right: 10px;}
+	}
+
+	.item-product {
+		margin: 0 -5px;
+    }
+    
+    .icomoon-phone-ring {
+        font-size: 2.1rem;
+        color: #fff;
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+    }
+
+    .order-user {
+        display: flex;
+        padding: 18px 16px;
+        border-bottom: solid 1px #ebebeb;
+        background: #fff;
+        position: relative;
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+        }
+
+        .user-body {
+            padding-left: 10px;
+            color: $color-default-gray;
+            text-transform: uppercase;
+            display: flex;
+            flex-direction: column;
+            justify-content:center;
+            font-size: 12px;
+
+            .name {
+                font-size: 15px;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+        }
+
+        .image-status {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+        }
+    }
+
+    .confirm-tab-title {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        padding: 20px 16px 4px;
+       
+
+        .checkout-step-title {
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .order-total-items {
+            position: relative;
+            color: $color-light-gray;
+            padding-right: 12px;
+            white-space: nowrap;
+            
+            .icomoon-arrow-down {
+                font-size: 0.9rem;
+                position: absolute;
+                top: 50%;
+                right: 0;
+                transform: translateY(-50%);
+                transition: all 0.3s ease;
+
+                &.active {
+                    transform: translateY(-50%) rotate(-180deg);
+                }
+            }
+        }
+    }
+
+    .list-product {
+        margin-bottom: 0;
+        position: relative;
+        padding-top: 11px;
+        background: #fff;
+
+        &:after {
+            position: absolute;
+            bottom: 0;
+            left: 16px;
+            content: '';
+            height: 1px;
+            background: #ebebeb;
+            width: calc(100% - 32px);
+        }
+
+        .item {
+            padding: 0 16px;
+
+            .item-inner {border-bottom: none !important;}
+
+            .label {
+                margin: 0 0 16px;
+            }
+        }
+    }
+
+    .totals{
+        padding: 8px 16px 10px;
+        font-size: 1.5rem;
+        border-bottom: solid 1px $border-slight-gray;
+        margin-bottom: 7px;
+
+		ion-row{
+			ion-col{
+                padding-left: 0;
+                padding-right: 0;
+			}
+        }
+        
+        .order-amount {
+            font-size: 1.6rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .coupon-des {
+            white-space: nowrap;
+            text-transform: uppercase;
+            color: #90949c;
+        }
+    }
+
+    .ion-ios-icon-note {
+        margin-right: 5px;
+        font-weight: 700;
+        font-size: 1.6rem;
+    }
+
+    .note-content {
+        font-size: 1.5rem;
+        color: $color-default-gray;
+    }
+
+    .cancel-wrapper {
+        border-top: solid 1px $border-slight-gray;
+        padding-top: 14px;
+    }
+
+    .confirm-note {
+        border-top: solid 1px $border-slight-gray;
+        border-bottom: solid 7px $background-gray;
+        position: relative;
+
+        &:after {
+            position: absolute;
+            content: '';
+            height: 1px;
+            width: 100%;
+            bottom: 0;
+            background: $border-slight-gray;
+        }
+
+        .confirm-note-title {
+            font-weight: 500;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+
+            span {
+                margin-right: 3px;
+                font-weight: 600;
+            }
+        }
+    }
+
+    .cancel-order {
+        background: $background-stronger-red !important;
+        border-radius: 2px;
+        margin: 0 0 20px;
+    }
+
+    .order-note {
+        padding-bottom: 120px;
+    }
+}

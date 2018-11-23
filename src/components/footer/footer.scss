@@ -1,0 +1,68 @@
+footer {
+	ion-row{
+		// position:absolute;
+		// width:100%;
+		// bottom:0;
+		// left:0;
+		border-top: solid 1px #dedede;
+    }
+    
+	.col {
+        color: $color-footer-gray;
+        padding: 5px 5px 2px;
+
+		ion-icon{
+			display:block;
+            font-size: 25px;
+		}
+		&.selected {color: $color-primary}
+    }
+    
+    .footer-link {
+        font-size: 1rem;
+    }
+
+	.cart-footer{
+        width: 17px;
+        height: 17px;
+        // line-height: 17px;
+        text-align: center;
+        border-radius: 50%;
+        font-size: 10px;
+        font-weight: 400;
+        padding: 0;
+        background: $background-red;
+        top: 4px;
+        margin-left: 2px;
+        left: 50%;
+        position: absolute;
+        color: #fff;
+        font-weight: 700;
+	}
+
+    .cart-label {
+        margin: 0;
+        height: 17px;
+        width: 17px;
+        padding: 0;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 50%;
+        position: absolute;
+        top: 4px;
+        margin-left: 2px;
+        left: 50%;
+        background-color: transparent !important;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-image: url('../assets/images/circle.svg');
+        background-size: cover;
+        opacity: 1 !important;
+
+        &.lg {
+            top: 3px;
+            height: 21px;
+            width: 21px;
+        }
+    }
+}

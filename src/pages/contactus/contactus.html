@@ -1,0 +1,134 @@
+<ion-header>
+
+    <ion-navbar>
+        <div class="header-wrapper">    
+            <ion-title>{{'account.contact_us' | translate}}</ion-title>
+        </div>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content background-gray>
+    <ion-grid no-padding [@fadeInLonger]="''">
+        <ion-row>
+            <ion-col relative>
+                <img [src]="textStatic.cellstore_localstore_image" />
+                <div absolute width-100 padding-5-5 class="info">
+                    <ion-row class="contact-us-info">
+                        <ion-col col-2>
+                            <img src="assets/images/logo-contact.png" />
+                        </ion-col>
+                        <ion-col col-5>
+                            <div>
+                                <div class="sitename" width-100 light>{{textStatic.cellstore_contact_us_title}}</div>
+                                <span (click)="openLink(textStatic.cellstore_contact_us_link_site)" class="siteurl" width-100 light>{{textStatic.cellstore_contact_us_link_site}}</span>
+                            </div>
+                        </ion-col>
+                        <ion-col col-5 text-right relative class="contact-us-social">
+                            <span *ngIf="textStatic.cellstore_link_twitter" light font-size-20 class="icomoon-twitter" (click)="openLink(textStatic.cellstore_link_twitter)"></span>
+                            <span *ngIf="textStatic.cellstore_link_facebook" light font-size-20 class="icomoon-facebook" (click)="openLink(textStatic.cellstore_link_facebook)"></span>
+                            <span *ngIf="textStatic.cellstore_link_google" light font-size-20 class="icomoon-google" (click)="openLink(textStatic.cellstore_link_google)"></span>
+                        </ion-col>
+                    </ion-row>
+                </div>
+            </ion-col>
+        </ion-row>
+        <ion-row padding background-light>
+            <div [innerHTML]="textStatic.cellstore_introduction_contact_us"></div>
+        </ion-row>
+
+        <ion-row (click)="showtime()" *ngIf="textStatic.cellstore_open_hours_title" padding padding-top-50 boder-solid-1 background-light
+            [ngClass]="{'border-b1': check}">
+            <ion-col col-2 class="section-icon icon-clock">
+                <img class="time" src="assets/images/clock.png" />
+            </ion-col>
+            <ion-col col-8>
+                <div class="section-title-location">{{'contact.timeopen' | translate}}</div>
+                <div font-size-15 color-time>{{textStatic.cellstore_open_hours_title}}</div>
+            </ion-col>
+            <ion-col *ngIf="textStatic.cellstore_open_hours_content" class="time-dropwdown">
+                <span [ngClass]="{'active': !check}" class="icomoon-arrow-down"></span>
+            </ion-col>
+        </ion-row>
+        <div class="block-time border-b1" secondary background-light *ngIf="!check">
+            <div *ngIf="textStatic.cellstore_open_hours_content" [innerHTML]="textStatic.cellstore_open_hours_content | safeHtml"></div>
+        </div>
+        <ion-row padding padding-top-50 boder-solid-1 background-light margin-top-7 class="section-title border-b1">
+            <ion-col col-2 class="section-icon">
+                <img class="time" src="assets/images/call.png" />
+            </ion-col>
+            <ion-col col-6>
+                <div class="section-title">
+                    {{'contact.callnow' | translate}}
+                </div>
+            </ion-col>
+            <ion-col secondary text-right class="phone-number">
+                <div (click)="callNow(textStatic.cellstore_contact_phone)">{{textStatic.cellstore_contact_phone}}</div>
+            </ion-col>
+        </ion-row>
+        <ion-row padding padding-top-50 background-light class="contact-us-email" [ngClass]="{'border-b1': !checkselect}">
+            <ion-item class="item-checkbox-right">
+                <ion-label>
+                    <span class="section-icon">
+                        <img class="time" src="assets/images/mail.png" />
+                    </span>
+                    <span class="section-title">{{'contact.sentEmail' | translate}}</span>
+                </ion-label>
+                <ion-checkbox color="blue" [(ngModel)]="checkselect"></ion-checkbox>
+            </ion-item>
+        </ion-row>
+        <div *ngIf="checkselect" class="contact-us-form border-b1">
+            <form [formGroup]="formContact" ng-submit="send()">
+                <div class="form-contact">
+                    <ion-label stacked secondary>{{'contact.form.name' | translate}}</ion-label>
+                    <ion-input class="input-field" type="text" placeholder="{{'contact.placeholder.name' | translate}}" formControlName="name"></ion-input>
+                    <div *ngIf="formContact.controls.name.hasError('required') && submitAttempt" class="err-danger">
+                        {{ 'errorMessage.nameRequired'|translate }}
+                    </div>
+                </div>
+                <div class="form-contact">
+                    <ion-label stacked secondary class="item-label">{{'contact.form.email' | translate}}</ion-label>
+                    <ion-input class="input-field" type="text" placeholder="{{'contact.placeholder.mail' | translate}}" formControlName="email"></ion-input>
+                    <div *ngIf="formContact.controls.email.hasError('invalidEmail') && submitAttempt" class="err-danger">
+                        {{ 'errorMessage.emailNotValid'|translate }}
+                    </div>
+                </div>
+                <div class="form-contact">
+                    <ion-label stacked secondary class="item-label">{{'contact.form.subject' | translate}}</ion-label>
+                    <ion-input class="input-field" type="text" placeholder="{{'contact.placeholder.subject' | translate}}" formControlName="subject"></ion-input>
+                    <div *ngIf="formContact.controls.subject.hasError('required') && submitAttempt" class="err-danger">
+                        {{ 'errorMessage.subjectRequired'|translate }}
+                    </div>
+                </div>
+                <div class="form-contact">
+                    <ion-label stacked secondary class="item-label">{{'contact.form.message' | translate}}</ion-label>
+                    <ion-input class="input-field" type="text" placeholder="{{'contact.placeholder.content' | translate}}" formControlName="message"></ion-input>
+                    <div *ngIf="formContact.controls.message.hasError('required') && submitAttempt" class="err-danger">
+                        {{ 'errorMessage.messageRequired'|translate }}
+                    </div>
+                </div>
+                <button ion-button type="submit" (click)="send()">{{'contact.send' | translate}}</button>
+            </form>
+        </div>
+        
+        <div *ngIf="lat != 0 && lng != 0">
+            <ion-row padding padding-top-50 boder-solid-1 background-light margin-top-7 class="contact-us-location">
+                <ion-col col-2 class="section-icon">
+                    <img class="time" src="assets/images/location.png" />
+                </ion-col>
+                <ion-col col-10>
+                    <div class="section-title-location">{{'contact.location' | translate}}</div>
+                    <ion-spinner *ngIf="loading_distance" name="ios" class="spinner-loading sm align-left"></ion-spinner>
+                    <div *ngIf="distance_km" display-inlineblock font-size-15 class="location-des">{{distance_km}}{{'contact.locationdetail' | translate}}</div>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <div style="height: 300px;" class="contact-us-map" id="map_canvas"></div>
+                </ion-col>
+            </ion-row>
+        </div>
+        
+    </ion-grid>
+</ion-content>

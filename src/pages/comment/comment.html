@@ -1,0 +1,54 @@
+<ion-header>
+
+    <ion-navbar #navbar>
+        <div class="header-wrapper">    
+            <ion-title>{{'comments.title' | translate}}
+                <span dir="ltr">({{total_comment}})</span>
+            </ion-title>
+        </div>
+    </ion-navbar>
+
+</ion-header>
+
+<div class="page-loading" *ngIf="!loaded_data">
+    <ion-spinner name="ios"></ion-spinner>
+</div> 
+
+<ion-content [ngClass]="{'no-scroll': !page_allow_scroll}">
+    <ion-refresher class="hide-spinner" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="ios-refresh" pullingText="" refreshingSpinner="circles" refreshingText="">
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <!-- review-->
+    <div class="comment-wrapper" *ngIf="comments">
+        <div [@fadeIn]="''" *ngFor="let review of comments">
+            <div class="review-item">
+                <div class="review-image">
+                    <div class="image" *ngIf="review.link_avatar" [style.background-image]="'url(' + review.link_avatar + ')'"></div>
+                    <div class="image" *ngIf="!review.link_avatar" [style.background-image]="'url(assets/images/person.png)'"></div>
+                </div>
+                <div class="review-body">
+                    <div class="review-top">
+                        <div class="review-name">{{review.user}}</div>
+                        <div class="review-time">{{review.comment_date_gmt|timeAgo}}</div>
+                        <div class="review-rating">
+                            <ion-icon name="icon-star" class="rating-star"></ion-icon>
+                            <span class="rating-star" *ngIf="review.rating">{{review.rating}}</span>
+                        </div>
+                    </div>
+                    <div class="review-content" [innerHTML]="review.comment_content|breakLine"></div>
+                </div>
+            </div>
+        </div>
+
+        <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+            <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+    </div>
+
+    <!-- Button Home -->
+    <button *ngIf="reviews_allowed" ion-button ion-fixed bottom margin background-primary class="button-home" (click)="showRating()">
+        <ion-icon name="icon-change-info" light></ion-icon>
+    </button>
+</ion-content>

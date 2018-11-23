@@ -1,0 +1,7 @@
+<button ion-button full no-margin (click)="change()" [color]="color" class="button-change">
+	<ng-content select="[this-title]"></ng-content>
+	<ion-icon [name]="show ? 'ios-arrow-up' : 'ios-arrow-down'"></ion-icon>
+</button>
+<div [hidden]="!show" padding-horizontal class="hide-show-content">
+	<ng-content select="[this-content]"></ng-content>
+</div>

@@ -1,0 +1,84 @@
+<ion-header>
+
+    <ion-navbar>
+        <div class="header-wrapper"> 
+            <ion-title>{{'signup.title' | translate}}</ion-title>
+        </div>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <form [formGroup]="formSignup" ng-submit="save()">
+        <ion-list class="form-custom form-signup">
+            <ion-item>
+                <ion-label>{{'signup.first_name' | translate}}</ion-label>
+                <ion-input type="text" formControlName="first_name"></ion-input>
+            </ion-item>
+            <div *ngIf="formSignup.controls.first_name.hasError('required') && submitAttempt" class="err-danger">
+                {{ 'errorMessage.nameRequired'|translate }}
+            </div>
+            <ion-item>
+                <ion-label>{{'signup.last_name' | translate}}</ion-label>
+                <ion-input type="text" formControlName="last_name"></ion-input>
+            </ion-item>
+            <div *ngIf="formSignup.controls.last_name.hasError('required') && submitAttempt" class="err-danger">
+                {{ 'errorMessage.nameRequired'|translate }}
+            </div>
+            <ion-item>
+                <ion-label>{{'signup.username' | translate}}</ion-label>
+                <ion-input type="text" (focus)="username_used=false" formControlName="username"></ion-input>
+            </ion-item>
+            <div *ngIf="formSignup.controls.username.hasError('required') && submitAttempt" class="err-danger">
+                {{ 'errorMessage.nameRequired'|translate }}
+            </div>
+            <div *ngIf="username_used && submitAttempt" class="err-danger">
+                {{ 'errorMessage.usernameUsed'|translate }}
+            </div>
+            <ion-item>
+                <ion-label>{{'signup.email' | translate}}</ion-label>
+                <ion-input type="text" (focus)="email_used=false" formControlName="email"></ion-input>
+            </ion-item>
+            <div *ngIf="formSignup.controls.email.hasError('invalidEmail') && submitAttempt" class="err-danger">
+                {{ 'errorMessage.emailNotValid'|translate }}
+            </div>
+            <div *ngIf="email_used && submitAttempt" class="err-danger">
+                {{ 'errorMessage.emailUsed'|translate }}
+            </div>
+
+            <div class="password-control">
+                <ion-item class="input-password">
+                    <ion-label>{{'signup.password' | translate}}</ion-label>
+                    <ion-input type="{{type}}" (ngModelChange)="changeNewPassword()" formControlName="password"></ion-input>
+                </ion-item>
+                <div class="control-icon" (click)="show_hide_Pass()">
+                    <span class="icomoon-eyes-hidden" *ngIf="check"></span>
+                    <span class="icomoon-eyes-open" *ngIf="!check"></span>
+                </div>
+            </div>
+            <div *ngIf="formSignup.controls.password.hasError('required') && submitAttempt" class="err-danger">
+                {{ 'errorMessage.passRequired'|translate }}
+            </div>
+            <div *ngIf="formSignup.controls.password.hasError('minlength') && submitAttempt" class="err-danger">
+                {{ 'errorMessage.passLength'|translate }}
+            </div>
+
+            <ion-item>
+                <ion-label>{{'signup.confirm_password' | translate}}</ion-label>
+                <ion-input type="{{type}}" formControlName="repass"></ion-input>
+            </ion-item>
+            <div *ngIf="(formSignup.controls.repass.hasError('invalidEqual') ||
+            formSignup.controls.repass.hasError('required')) && submitAttempt" class="err-danger">
+                {{ 'errorMessage.re_pass_error'|translate }}
+            </div>
+            <!-- <div class="signup-note">{{'signup.text_notice' | translate}}</div>  -->
+        </ion-list>
+
+        <button type="submit" class="form-custom-submit" ion-button full (click)="save()">{{'signup.title' | translate}}</button>
+        <div class="signup_question">
+            {{'signup.signup_question' | translate}}
+            <span [navPush]="SigninPage" [navParams]="{'parent': 'signup'}">{{'signup.login' | translate}}</span>
+        </div>
+    </form>
+</ion-content>

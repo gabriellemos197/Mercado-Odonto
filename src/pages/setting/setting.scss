@@ -1,0 +1,61 @@
+page-setting {
+  .content {
+    .list-ios>.item-block:last-child {
+      border: none;
+    }
+  }
+  .account-list {
+    border-bottom: solid 1px $border-slight-gray;
+
+    .item {
+      border-bottom: none;
+      min-height: 10px;
+      padding: 2px 0 2px 16px;
+
+      .item-inner {
+        border-bottom: none !important;
+        .toggle-checked {
+          // background:#b2badf; 
+          .toggle-inner {
+            background-color: $background-primary;
+          }
+        }
+      }
+
+      .label {
+        font-size: 1.6rem;
+      }
+    }
+  }
+
+  ion-note {
+    max-width: 150px;
+    max-width: 150px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 1.5rem;
+    text-align: right;
+    width: 100%;
+  }
+
+  .clear-cache-wrapper {
+    background: $background-gray;
+    padding-top: 7px;
+
+    .label {
+      font-size: 1.6rem;
+    }
+
+    .item {
+      color: $color-red;
+      border-top: solid 1px $border-slight-gray;
+      border-bottom: solid 1px $border-slight-gray;
+
+      .item-inner,
+      .input-wrapper {
+        border-bottom: none;
+      }
+    }
+  }
+}

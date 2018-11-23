@@ -1,0 +1,19 @@
+<ion-row background-light *ngIf="!keyboard_show">
+	<ion-col text-center tappable (click)="goto(HomePage)" [ngClass]="{'selected':active==HomePage}">
+		<ion-icon name="icon-home"></ion-icon>
+		<span class="footer-link">{{'tabs.home'|translate}}</span>
+	</ion-col>
+	<ion-col text-center tappable (click)="goto(CartPage)" [ngClass]="{'selected':active==CartPage}">
+		<button ion-button class="cart-label" [ngClass]="{'lg': cart_total >= 100}">{{cart_total}}</button>
+		<ion-icon name="icon-cart"></ion-icon>
+		<span class="footer-link">{{'tabs.cart'|translate}}</span>
+	</ion-col>
+	<ion-col text-center tappable (click)="goto(AccountPage)" [ngClass]="{'selected':active==AccountPage}">
+		<ion-icon name="icon-me"></ion-icon>
+		<span class="footer-link">{{'tabs.account'|translate}}</span>
+	</ion-col>
+	<ion-col text-center tappable (click)="goto(SettingPage)" [ngClass]="{'selected':active==SettingPage}">
+		<ion-icon name="icon-setting"></ion-icon>
+		<span class="footer-link">{{'tabs.setting'|translate}}</span>
+	</ion-col>
+</ion-row>

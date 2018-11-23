@@ -1,0 +1,82 @@
+<ion-header>
+    <ion-navbar>
+        <div class="header-wrapper"> 
+            <ion-title>{{title}}</ion-title>   
+        </div>
+    </ion-navbar>
+</ion-header>
+
+<div class="page-loading" *ngIf="!loaded_data">
+    <ion-spinner name="ios"></ion-spinner>
+</div> 
+
+<ion-content>
+    <div [@fadeIn]="''" *ngIf="checkResult && products.length < 1 " class="search-no-result no-icon">
+        <div width-100 text-center>
+            <span font-size-17 secondary>{{'search.no_result' | translate}}</span>
+        </div>
+    </div>
+
+    <!-- Refresh -->
+    <ion-refresher (ionRefresh)="doRefresh($event)" *ngIf="products && 0<products.length">
+        <ion-refresher-content pullingIcon="ios-refresh" pullingText="" refreshingSpinner="circles" refreshingText="">
+        </ion-refresher-content>
+    </ion-refresher>
+    <div *ngIf="products && 0<products.length" background-light class="page-new-wrapper">
+        <ion-row>
+            <ion-col [@fadeIn]="''" col-6 no-padding border-right border-bottom-solid-1 *ngFor="let product of products">
+                <div class="product-small">
+                    <div *ngIf="product.date_created_gmt | isNew" class="new-label">
+                        <span>{{ 'home.new'|translate}}</span>
+                    </div>
+                    <div class="sale-label" *ngIf="product.price < product.regular_price
+                        && product.type!='variable' && product.type!='grouped'">
+                        {{-((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</div>
+                    <div class="product-top" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                        <img *ngIf="product.cellstore_images && product.cellstore_images[0].cellstore_square" [src]="product.cellstore_images[0].cellstore_square"
+                        />
+                        <img *ngIf="!product.cellstore_images || !product.cellstore_images[0].cellstore_square" src="assets/images/no-image.png"
+                        />
+                    </div>
+                    <div class="product-price">
+                        <span class="new-price" [innerHTML]="product.price_html"></span>
+                    </div>
+                    <div class="product-name" [navPush]="DetailPage" [navParams]="{id:product.id}" [innerHTML]="product.name | truncate:[30]"></div>
+                    <div class="product-info" [ngClass]="{'hide-sale': hide_sale}" *ngIf=" product.average_rating || product.total_sales">
+                        <div class="product-rating" [ngClass]="{'hidden': product.average_rating==''}">
+                            <ion-icon name="icon-star" class="text-orange"></ion-icon>
+                            <span class="text-orange" *ngIf="product.average_rating">{{product.average_rating |number:'1.1-1'}}</span>
+                        </div>
+                        <div class="product-sold" [ngClass]="{'hidden': product.total_sales==''}">
+                            <span class="product-total-sold" *ngIf="product.total_sales">{{product.total_sales}}{{'home.sold' | translate}}</span>
+                        </div>
+                    </div>
+                    <div class="product-bottom">
+                        <div class="product-action" *ngIf="(product.in_stock && product.stock_quantity == null) || (product.in_stock && product.stock_quantity > 0) || product.backordered">
+                            <button *ngIf="product.type == 'simple'" (click)="quickAddCart(product, $event)" class="action-type action-cart">
+                                <span class="icomoon-cart-add"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                                {{'general.addToCart' | translate}}
+                            </button>
+                            <button *ngIf="product.type != 'simple'" [navPush]="DetailPage" [navParams]="{id:product.id}" class="action-type action-choose">
+                                {{'general.chooseOption' | translate}}
+                            </button>
+                            <span [ngClass]="{'active': inCart(product.id, cart)}" class="icomoon-cart-check">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- / .product-small -->
+            </ion-col>
+        </ion-row>
+    </div>
+    <ion-infinite-scroll (ionInfinite)="load($event)" *ngIf="products && 0<products.length">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

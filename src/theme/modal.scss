@@ -1,0 +1,35 @@
+.custom-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .modal-wrapper {
+    height: 250px;
+    width: 280px;
+
+    &,
+    .ion-page {
+      border-radius: 15px;
+      overflow: hidden;
+    }
+  }
+
+  &.cate-modal .modal-wrapper {
+    height: 250px;
+  }
+
+  &.modal-rating .modal-wrapper {
+    width: 290px;
+    height: 345px;
+  }
+
+  &.modal-sort .modal-wrapper {
+    height: 230px;
+    width: 280px;
+  }
+}
+
+.rating .modal-rating {
+  align-items: flex-start;
+  padding-top: 20px;
+}

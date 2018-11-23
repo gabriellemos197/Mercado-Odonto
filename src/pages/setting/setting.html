@@ -1,0 +1,38 @@
+<ion-header>
+
+    <ion-navbar hideBackButton="true">
+        <div class="header-wrapper">    
+            <ion-title>{{'setting.title' | translate}}</ion-title>
+        </div>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content background-gray [ngClass]="{'no-scroll': !page_allow_scroll}">
+    <div class="swipe-bg" (swipe)="onSwipeContent($event)">
+        <ion-list no-margin class="account-list">
+            <ion-item dark>
+                <ion-label>{{'setting.pushnotice'|translate}}</ion-label>
+                <ion-toggle *ngIf="data.notification == false || data.notification == true" item-right [(ngModel)]="data.notification" (ngModelChange)="notification(data.notification)"></ion-toggle>
+            </ion-item>
+            <button ion-item dark *ngIf="data.text" (click)="changeTextSize()">
+                <ion-label>{{'setting.text_size.title'|translate}}</ion-label>
+                <ion-note item-right text-capitalize gray>{{data.text.name}}</ion-note>
+            </button>
+            <button ion-item dark (click)="goToCurrency()">
+                <ion-label>{{'setting.currency'|translate}}</ion-label>
+                <ion-note *ngIf="currency" item-right text-capitalize gray [innerHTML]="currency.name"></ion-note>
+            </button>
+            <button ion-item dark *ngIf="listLanguage && listLanguage.length>0" (click)="goToLanguage()">
+                <ion-label>{{'setting.language'|translate}}</ion-label>
+                <ion-note item-right text-capitalize gray [innerHTML]="lang.name"></ion-note>
+            </button>
+        </ion-list>
+        <div class="clear-cache-wrapper" background-gray>
+            <button ion-item (click)="clearCache()">{{'setting.clear_cache'|translate}}</button>
+        </div>
+    </div>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

@@ -1,0 +1,56 @@
+<ion-header>
+    <ion-navbar hideBackButton="true">
+        <div class="header-wrapper">    
+            <ion-title>{{'account.title'|translate}}</ion-title>
+        </div>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <div class="swipe-bg" (swipe)="onSwipeContent($event)">
+        <ion-grid no-padding background-gray>
+            <div *ngIf="!isLogin" [@fadeIn]="''">
+                <div class="account-brief" background-light [navPush]="Signin" [navParams]="{check:'home'}">
+                    <div class="account-avatar" [style.background-image]="'url(assets/images/account.png)'"></div>
+                    <!-- <img avatar-login border-radius src="assets/images/account.png"/> -->
+                    <div class="account-brief-body">
+                        <div class="name-account">{{"account.login" | translate}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="isLogin" [@fadeIn]="''">
+                <div class="account-brief" background-light [navPush]="Profile">
+                    <div class="account-avatar" *ngIf="!data.user.mobiconnector_avatar" [style.background-image]="'url(assets/images/account.png)'"></div>
+                    <div class="account-avatar" *ngIf="data.user.mobiconnector_avatar" [style.background-image]="'url(' +data.user.mobiconnector_avatar+ ')'"></div>
+                    <div class="account-brief-body">
+                        <div width-100 secondary class="name-account">{{data.user.display_name}}
+                            <ion-icon font-size-15 primary class="change-account" name="icon-change-info"></ion-icon>
+                        </div>
+                        <div class="mail-account">{{data.user.user_email}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="account-actions">
+                <li [navPush]="isLogin?Order:Signin" class="border-t1">
+                    <img width-60 src="assets/images/icon-order.png" />
+                    <div class="action-title">{{'account.my_order' | translate}}</div>
+                    <div class="icomoon-right-arrow"></div>
+                </li>
+                <li [navPush]="Favorite" class="border-t1">
+                    <img width-60 src="assets/images/icon-favorite.png" />
+                    <div class="action-title">{{'account.favorite' | translate}}</div>
+                    <div class="icomoon-right-arrow"></div>
+                </li>
+            </ul>
+            <ion-row *ngIf="isLogin" padding-14 background-light>
+                <ion-col>
+                    <button margin-top-35 ion-button border-radius-1 full class="disable-hover" (click)="signOut()">{{'account.logout' | translate}}</button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

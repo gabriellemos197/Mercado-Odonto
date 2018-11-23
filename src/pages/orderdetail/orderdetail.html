@@ -1,0 +1,235 @@
+<ion-header>
+
+    <ion-navbar #navbar>
+        <div class="header-wrapper"> 
+            <ion-title *ngIf="data">
+                <div class="order-top-title">{{'orderdetail.title'| translate}}
+                    <span>{{data.id}}</span>
+                </div>
+                <div class="order-top-subtitle">{{data.date_created_gmt | date: date_format}}</div>
+            </ion-title>
+            <span *ngIf="textStatic.cellstore_contact_phone" class="icomoon-phone-ring" (click)="callNow(textStatic.cellstore_contact_phone)"></span>  
+        </div>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content id="order-content" (scroll)="scrollHandler($event)">
+    <div class="page-loading pb-44" *ngIf="!loaded_data">
+        <ion-spinner name="ios"></ion-spinner>
+    </div>
+
+    <div [@fadeIn]="''" *ngIf="data" background-gray class="page-wrapper">
+        <div class="order-user">
+            <div class="user-avatar" *ngIf="user.mobiconnector_avatar" [style.background-image]="'url(' + user.mobiconnector_avatar + ')'"></div>
+            <div class="user-avatar" *ngIf="!user.mobiconnector_avatar" [style.background-image]="'url(assets/images/account.png)'"></div>
+            <div class="user-body">
+                <div class="title">{{'order.buyer' | translate}}</div>
+                <div class="name">{{user.display_name}}</div>
+            </div>
+            <div class="order-label-status">
+                <span [ngClass]="data.status|lowercase">{{data.status}}</span>
+            </div>
+        </div>
+
+        <div class="confirm-tab-title">
+            <div class="checkout-step-title">{{'orderdetail.yourorder'|translate}}</div>
+            <div (click)="showProductList()" class="order-total-items">{{total_item}}
+                <span [ngClass]="{'active': !checklist}" class="icomoon-arrow-down"></span>
+            </div>
+        </div>
+
+        <!-- List product -->
+        <ion-list class="list-product" *ngIf="!checklist">
+            <ion-item *ngFor="let product of data.line_items" no-lines no-padding relative>
+                <div class="product-line-brief order-line">
+                    <div class="product-img" [navPush]="DetailPage" [navParams]="{id:product.product_id}">
+                        <img *ngIf="product.cellstore_square && product.cellstore_square[0].cellstore_square" [src]="product.cellstore_square[0].cellstore_square"
+                        />
+                        <img *ngIf="!product.cellstore_square || !product.cellstore_square[0].cellstore_square" src="assets/images/no-image.png"
+                        />
+                    </div>
+                    <div class="product-body">
+                        <div class="product-title" [navPush]="DetailPage" [navParams]="{id:product.product_id}" [innerHTML]="product.name | truncate:[50]"></div>
+                        <div class="product-attributes">
+                            <span>{{product.selected_attributes|ArrayJoin}}</span>
+                        </div>
+                        <div class="product-info">
+                            <div class="info-left">
+                                <span [innerHTML]="product.price"></span>
+                                <span class="qty">{{'checkout.qty' | translate}}
+                                    <span>{{product.quantity}}</span>
+                                </span>
+                            </div>
+                            <div class="info-right">
+                                <span>
+                                    <!--  <span class="price-brief">{{'checkout.rs' | translate}}</span> -->
+                                    <span [innerHTML]="product.subtotal"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="product-info" *ngIf="product.meta_data.length > 0">
+                            <p *ngFor="let attr of product.meta_data" width-100>
+                                <!-- <b dark [innerHTML]="attr.key + ': ' | slice:3:attr.key.length +1"></b> -->
+                                <b dark [innerHTML]="attr.key + ': '"></b>
+                                <span gray [innerHTML]="attr.value"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </ion-item>
+        </ion-list>
+
+        <div light-bg dark class="totals" padding-5-0>
+            <!-- <div margin-bottom><b dark text-uppercase>{{'checkout.totals'|translate}}</b></div> -->
+            <ion-row>
+                <ion-col>{{'checkout.total_price'|translate}}</ion-col>
+                <ion-col text-right [innerHTML]="data.subtotal"></ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>{{'checkout.shipping'|translate}}</ion-col>
+                <!-- <ion-col text-right *ngIf="data_checkout._shipping==0" green>{{'checkout.free'|translate}}</ion-col> -->
+                <ion-col text-right [innerHTML]="data.shipping_total"></ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>{{'checkout.tax'|translate}}</ion-col>
+                <ion-col text-right [innerHTML]="data.total_tax"></ion-col>
+            </ion-row>
+            <ion-row *ngFor="let coupon of  data.coupon_lines">
+                <ion-col width-66>
+                    <span class="coupon-title">{{'checkout.coupon_code'|translate}}</span>
+                    <span class="coupon-des">(
+                        <span class="inline-flex">{{coupon.code}}</span>: -{{coupon.amount}})</span>
+                </ion-col>
+                <ion-col text-right [innerHTML]="'-' + coupon.discount"></ion-col>
+            </ion-row>
+            <ion-row class="order-amount">
+                <ion-col>{{'checkout.order_total'|translate}}</ion-col>
+                <ion-col *ngIf="data.total" [innerHTML]="data.total" text-right></ion-col>
+            </ion-row>
+        </div>
+
+        <div background-light class="shipping-box border-t1">
+            <div padding>
+                <ion-row>
+                    <ion-col no-padding>
+                        <div class="confirm-title" width-100>
+                            <span secondary uppercase>{{'checkout.modetransport' | translate}}</span>
+                        </div>
+                        <p width-100 no-margin>{{data._shipping_title}}
+                            <span class="inline-flex" [innerHTML]="'('+data.shipping_total+')'" red></span>
+                        </p>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </div>
+        <div background-light class="shipping-box border-t1">
+            <div padding>
+                <ion-row>
+                    <ion-col no-padding>
+                        <div class="confirm-title" width-100>
+                            <span secondary uppercase margin-top-5>{{'checkout.paymentmethod' | translate}}</span>
+                        </div>
+                        <p width-100 no-margin *ngIf="data.payment_method">
+                            {{data.payment_method_title}}
+                        </p>
+                        <div *ngIf="data.bacs_accounts && data.bacs_accounts.length > 0" class="payment-bank">
+                            <ul *ngFor="let item of data.bacs_accounts">
+                                <li>
+                                    <span>{{'orderdetail.account_name'|translate}}</span>: {{item.account_name}}</li>
+                                <li>
+                                    <span>{{'orderdetail.account_number'|translate}}</span>: {{item.account_number}}</li>
+                                <li>
+                                    <span>{{'orderdetail.bank_name'|translate}}</span>: {{item.bank_name}}</li>
+                                <li *ngIf="item.sort_code">
+                                    <span>{{'orderdetail.sort_code'|translate}}</span>: {{item.sort_code}}</li>
+                                <li *ngIf="item.iban">
+                                    <span>{{'orderdetail.iban'|translate}}</span>: {{item.iban}}</li>
+                                <li *ngIf="item.bic">
+                                    <span>{{'orderdetail.bic'|translate}}</span>: {{item.bic}}</li>
+                            </ul>
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </div>
+        <div background-light class="shipping-box shipping-address border-t1">
+            <div padding>
+                <ion-row>
+                    <ion-col no-padding>
+                        <div class="confirm-title" width-100>
+                            <span secondary uppercase>{{'checkout.addressinfo' | translate}}</span>
+                        </div>
+                    </ion-col>
+                </ion-row>
+                <div class="shipping-box-drowdown">
+                    <div class="block-address">
+                        <ion-row>
+                            <ion-col (click)="showAddress()">
+                                <b secondary>{{'checkout.shipping_address' | translate}}</b>
+                                <span class="icomoon-arrow-down" [ngClass]="{'active' : checkAdd}"></span>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="shipping-dropdown-content" *ngIf="checkAdd" border-bottom-solid-1>
+                            <ion-col>
+                                <div *ngIf="user">
+                                    <p>{{data.shipping.first_name}} {{data.shipping.last_name}}</p>
+                                    <p>{{data.shipping.company}}</p>
+                                    <p>{{data.shipping.address_1}}</p>
+                                    <p>{{data.shipping.address_2}}</p>
+                                    <p>{{data.shipping.city}}, {{data.shipping.postcode}}</p>
+                                    <p *ngIf="data.shipping.country" [innerHTML]="findCountryFormCode(data.shipping.country)"></p>
+                                    <p>{{data.shipping.state}}</p>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                    <div class="block-address no-margin">
+                        <ion-row>
+                            <ion-col (click)="showBilling()">
+                                <b secondary>{{'checkout.billing_address' | translate}}</b>
+                                <span class="icomoon-arrow-down" [ngClass]="{'active' : checkBill}"></span>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="checkBill" class="shipping-dropdown-content">
+                            <ion-col>
+                                <div *ngIf="user">
+                                    <p>{{data.billing.first_name}} {{data.billing.last_name}}</p>
+                                    <p>{{data.billing.company}}</p>
+                                    <p>{{data.billing.address_1}}</p>
+                                    <p>{{data.billing.address_2}}</p>
+                                    <p>{{data.billing.city}}, {{data.billing.postcode}}</p>
+                                    <p *ngIf="data.billing.country" [innerHTML]="findCountryFormCode(data.billing.country)"></p>
+                                    <p>{{data.billing.state}}</p>
+                                    <p>{{data.billing.phone}}</p>
+                                    <p>{{data.billing_email}}</p>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="order-note" background-light>
+            <div class="confirm-note" *ngIf="data.customer_note">
+                <div margin-top-7 padding>
+                    <div class="confirm-note-title">
+                        <span class="icomoon-note"></span>
+                        {{'checkout.note' | translate}}
+                    </div>
+                    <div width-100 class="note-content" [innerHTML]="data.customer_note|breakLine"></div>
+                    <!--       <div width-100 class="note-content" *ngIf="!data.customer_note">{{'orderdetail.no_note' | translate}}</div> -->
+                </div>
+            </div>
+
+            <div class="cancel-wrapper" padding-left padding-right *ngIf="data.status=='on-hold' || data.status=='pending'">
+                <button class="cancel-order" ion-button full (click)="changeStatus()" uppercase>
+                    {{'orderdetail.cancel'|translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

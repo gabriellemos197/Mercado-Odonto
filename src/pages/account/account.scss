@@ -1,0 +1,98 @@
+page-account {
+	[width-75]{width:75%;}
+	[padding-14]{padding:13px;}
+	[margin-top-25]{margin-top:25px;}
+	[margin-top-5]{margin-top: 5px;}
+	[width-60]{width: 60%;}
+
+	.arrow-account{
+		top: 27%;
+	    right: 10px;	
+	    color: #a0a2a7;
+	}
+	.mail-account{
+		top: 45%;
+    	left: 0;
+      font-size: 1.3rem;
+      color: $color-light-gray;
+	}
+	// .content{
+	// 	.scroll-content{margin-bottom:49px !important;}
+ //  }
+  
+  .account-brief {
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    border-bottom: solid 1px $border-slight-gray;
+
+    .account-brief-body {
+      padding-left: 20px;
+      flex: 1;
+
+      .name-account {
+        font-weight: 500;
+        text-transform: uppercase;
+        color: $color-dark;
+        font-size: 1.7rem;
+      }
+    }
+  }
+
+  .account-avatar {
+      width: 75px;
+      height: 75px;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%;
+  }
+
+//   .account-brief-options {
+//     background: #fff;
+//     border-bottom: solid 1px #ebebeb;
+//     padding: 14px;
+
+//     > ion-col {
+//       display: flex;
+//       align-items: center;
+//     }
+//   }
+
+  .account-actions {
+    list-style-type: none;
+    padding: 30px 0 0;
+    margin: 0;
+    padding-left: 0;
+    border-bottom: solid 1px $border-slight-gray;
+
+    li {
+        display: flex;
+        align-items: center;
+        padding: 10px 14px;
+        background: #fff;
+        position: relative;
+        margin-bottom: 7px;
+        border-bottom: solid 1px $border-slight-gray;
+
+        img {width: 30px;}
+
+        .action-title {
+            padding-left: 14px;
+            font-size: 1.6rem;
+            color: $color-default-gray;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .icomoon-right-arrow {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            color: $color-light-gray;
+            font-size: 1.3rem;
+        }
+    }
+  }
+}

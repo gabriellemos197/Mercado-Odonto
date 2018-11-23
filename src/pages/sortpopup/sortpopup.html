@@ -1,0 +1,18 @@
+<ion-content>
+    <div class="page-wrapper">
+        <ion-row class="page-title" padding-5 border-bottom-solid-1 background-gray>
+            <ion-col text-center>
+                <span class="icomoon-cancel-sort close" absolute float-left (click)="close()"></span>
+                <span secondary font-weight-500>{{'search.sort' | translate}}</span>
+            </ion-col>
+        </ion-row>
+        <div class="sort-options">
+            <ion-list radio-group padding-0-16 [(ngModel)]="sort" (ngModelChange)="click()" class="list-categories" no-margin>
+                <button ion-item *ngFor="let option of sortList" font-size-15 border-bottom-solid-1>
+                    <ion-radio [value]="option.value" [attr.checked]="sort==option.value ? 'checked' : null"></ion-radio>
+                    <ion-label [innerHTML]="option.title"></ion-label>
+                </button>
+            </ion-list>
+        </div>
+    </div>
+</ion-content>

@@ -1,0 +1,60 @@
+page-thank {
+    .header-logo,
+    .header-logo img {height: 26px;}
+
+    .bar-button-menutoggle {
+            display: inline-block !important;
+        }
+
+
+    .thank_wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding-top: 20px;
+
+    }
+
+    .thank_img {
+        margin-bottom: 10px;
+
+        img {
+            width: 50px;
+        }
+    }
+    
+    .button {
+        padding: 0 30px;
+        margin-bottom: 12px;
+        border-radius: 2px;
+
+        &.btn-red {
+            background: $background-red !important;
+        }
+    }
+
+    .thank_title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        white-space: nowrap;
+    }
+
+    .thank_msg {
+        max-width: 300px;
+        margin: 0 auto 20px;
+        text-align: center;
+    }
+
+    .order-id {
+        margin-bottom: 20px;
+        color: $color-light-gray;
+        white-space: nowrap;
+
+        span {
+            color: $color-primary;
+        }
+    }
+}

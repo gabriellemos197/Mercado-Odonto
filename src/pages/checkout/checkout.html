@@ -1,0 +1,489 @@
+<ion-header>
+
+    <ion-navbar>
+        <div class="header-wrapper">
+            <ion-title>{{'checkout.title' | translate}}</ion-title>
+            <ion-label class="checkout-price-top" *ngIf="total_order || total_order==0 ">{{total_order|price}}</ion-label>    
+        </div>
+    </ion-navbar>
+    <!-- <ion-toolbar> -->
+    <div width-100 background-primary class="tab-checkout">
+        <ion-row light text-uppercase font-size-11>
+            <ion-col class="tab-checkout-item" (click)="editAddress()" text-center relative>
+                <ion-icon *ngIf="activePayment||activeConfirm" name="ios-checkmark" class="icon-check" absolute></ion-icon>
+                <span *ngIf="!activePayment && !activeConfirm" class="arrow-up"></span>
+                <span class="tab-title active">{{'checkout.tab.shipping' | translate}}</span>
+                <span class="icomoon-arrow-right" [ngClass]="{'active': (activePayment||activeConfirm)}"></span>
+            </ion-col>
+            <ion-col class="tab-checkout-item" (click)="editShipping()" relative text-center deadactiveTab [ngClass]="{'activeTabPayment' : activeConfirm}">
+                <ion-icon *ngIf="activeConfirm" name="ios-checkmark" class="icon-check" absolute></ion-icon>
+                <!-- <div > -->
+                <span *ngIf="activePayment" class="arrow-up"></span>
+                <ion-icon float-left name="icon-arrow-right"></ion-icon>
+                <span class="tab-title" [ngClass]="{'active': (activePayment||activeConfirm)}">{{'checkout.tab.payment' | translate}}</span>
+                <span class="icomoon-arrow-right" [ngClass]="{'active': activeConfirm}"></span>
+                <!-- </div> -->
+
+            </ion-col>
+            <ion-col class="tab-checkout-item" text-center relative deadactiveTab>
+                <!-- <div > -->
+                <span *ngIf="activeConfirm" class="arrow-up"></span>
+                <ion-icon float-left name="icon-arrow-right"></ion-icon>
+                <span class="tab-title" [ngClass]="{'active' : activeConfirm}">{{'checkout.tab.confirm' | translate}}</span>
+                <!-- </div> -->
+            </ion-col>
+        </ion-row>
+    </div>
+    <!-- </ion-toolbar> -->
+</ion-header>
+
+<ion-content class="checkout-page">
+    <!-- address tab-->
+    <div *ngIf="!activePayment && !activeConfirm" padding>
+        <div class="checkout-step-title title-address">{{'address.your_billing'|translate}}</div>
+        <!-- <div text-uppercase dark>{{'address.your_delivery'|translate}}</div> -->
+        <form [formGroup]="formAddress" ng-submit="confirm()">
+            <ion-list class="form-custom form-checkout-address">
+                <ion-item>
+                    <ion-label>{{'address.first_name'|translate}}</ion-label>
+                    <ion-input type="text" formControlName="billing_first_name"  (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <div *ngIf="formAddress.controls.billing_first_name.hasError('required') && submitAddress" class="err-danger">
+                    {{ 'errorMessage.nameRequired'|translate }}
+                </div>
+                <ion-item>
+                    <ion-label>{{'address.last_name'|translate}}</ion-label>
+                    <ion-input type="text" formControlName="billing_last_name"  (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <div *ngIf="formAddress.controls.billing_last_name.hasError('required') && submitAddress" class="err-danger">
+                    {{ 'errorMessage.nameRequired'|translate }}
+                </div>
+                <ion-item>
+                    <ion-label>{{'address.company'|translate}}</ion-label>
+                    <ion-input type="text" formControlName="billing_company"  (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label>{{'address.address_1'|translate}}</ion-label>
+                    <ion-input type="text" formControlName="billing_address_1" (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <div *ngIf="formAddress.controls.billing_address_1.hasError('required') && submitAddress" class="err-danger">
+                    {{ 'errorMessage.addressRequired'|translate }}
+                </div>
+                <ion-item>
+                    <ion-label>{{'address.address_2'|translate}}</ion-label>
+                    <ion-input type="text" formControlName="billing_address_2"  (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label>{{'address.city'|translate}}</ion-label>
+                    <ion-input type="text" formControlName="billing_city"  (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <div *ngIf="formAddress.controls.billing_city.hasError('required') && submitAddress" class="err-danger">
+                    {{ 'errorMessage.cityRequired'|translate }}
+                </div>
+                <ion-item *ngIf="billing_post_required != 'no'">
+                    <ion-label *ngIf="billing_post_required == 'input_required'">{{'address.zip_2'|translate}}</ion-label>
+                    <ion-label *ngIf="billing_post_required == 'input'">{{'address.zip'|translate}} {{billing_post_required}}</ion-label>
+                    <ion-input type="text" formControlName="billing_postcode"  (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <div *ngIf="!formAddress.controls.billing_postcode.value && billing_post_required =='input_required' && submitAddress" class="err-danger">
+                    {{ 'errorMessage.zipRequired'|translate }}
+                </div>
+                <ion-item>
+                    <ion-label>{{'address.country'|translate}}</ion-label>
+                    <ion-select [selectOptions]="selectCountryOptions" formControlName="billing_country" [okText]="'general.done'|translate"
+                        (ionChange)="changeCountryBilling($event)">
+                        <ion-option *ngFor="let country of countries" [value]="country.value">
+                            <span [innerHtml]="country.name"></span>
+                        </ion-option>
+                    </ion-select>
+                </ion-item>
+                <div *ngIf="formAddress.controls.billing_country.hasError('required') && submitAddress" class="err-danger">
+                    {{ 'errorMessage.countryRequired'|translate }}
+                </div>
+                <ion-item *ngIf="statesBilling && statesBilling!='input' && statesBilling!='no' &&  statesBilling!='input_required'">
+                    <ion-label>{{'address.state'|translate}}</ion-label>
+                    <ion-select [selectOptions]="selectStateOptions" [okText]="'general.done'|translate" type="text" formControlName="billing_state" (ionChange)="checkUseBilling()">
+                        <ion-option *ngFor="let state of statesBilling" [value]="state.value">
+                            <span [innerHtml]="state.name"></span>
+                        </ion-option>
+                    </ion-select>
+                </ion-item>
+                <ion-item *ngIf="statesBilling && statesBilling=='input'">
+                    <ion-label>{{'address.state_optional'|translate}}</ion-label>
+                    <ion-input type="text" formControlName="billing_state" (input)="updateShipping()" ></ion-input>
+                </ion-item>
+                <ion-item *ngIf="statesBilling && statesBilling=='input_required'">
+                    <ion-label>{{'address.state'|translate}}</ion-label>
+                    <ion-input type="text" formControlName="billing_state" (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <div *ngIf="!formAddress.controls.billing_state.value && submitAddress">
+                    <div class="err-danger" *ngIf="statesBilling=='input_required' || (statesBilling != 'input' && statesBilling != 'no')">
+                        {{ 'errorMessage.stateInputRequired'|translate }}
+                    </div>
+                </div>
+                <ion-item>
+                    <ion-label>{{'address.phone'|translate}}</ion-label>
+                    <ion-input type="tel" formControlName="billing_phone" (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <div *ngIf="formAddress.controls.billing_phone.hasError('required') && submitAddress" class="err-danger">
+                    {{ 'errorMessage.phoneRequired'|translate }}
+                </div>
+                <ion-item>
+                    <ion-label>{{'address.email'|translate}}</ion-label>
+                    <ion-input type="text" (ngModelChange)="email_exist=false" formControlName="user_email" (input)="updateShipping()"></ion-input>
+                </ion-item>
+                <div *ngIf="formAddress.controls.user_email.hasError('invalidEmail') && submitAddress" class="err-danger">
+                    {{ 'errorMessage.emailNotValid'|translate }}
+                </div>
+                <div *ngIf="email_exist && submitAddress" class="err-danger">
+                    {{ 'errorMessage.emailUsed'|translate }}
+                </div>
+            </ion-list>
+        </form>
+
+        <div class="checkout-step-title">{{'address.your_delivery'|translate}}</div>
+        <ion-item class="checkbox-use-shipping" no-padding>
+            <ion-label>{{'address.use_shipping'|translate}}</ion-label>
+            <ion-checkbox [(ngModel)]="useShipping" (ionChange)="checkUseBilling()"></ion-checkbox>
+        </ion-item>
+        <div *ngIf="!useShipping" class="billing-address-wrapper">
+            <form [formGroup]="formAddress" ng-submit="confirm()">
+                <ion-list class="form-custom form-checkout-address">
+                    <ion-item>
+                        <ion-label>{{'address.first_name'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_first_name"></ion-input>
+                    </ion-item>
+                    <div *ngIf="formAddress.controls.shipping_first_name.hasError('required') && submitAddress" class="err-danger">
+                        {{ 'errorMessage.nameRequired'|translate }}
+                    </div>
+                    <ion-item>
+                        <ion-label>{{'address.last_name'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_last_name"></ion-input>
+                    </ion-item>
+                    <div *ngIf="formAddress.controls.shipping_last_name.hasError('required') && submitAddress" class="err-danger">
+                        {{ 'errorMessage.nameRequired'|translate }}
+                    </div>
+                    <ion-item>
+                        <ion-label>{{'address.company'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_company"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>{{'address.address_1'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_address_1"></ion-input>
+                    </ion-item>
+                    <div *ngIf="formAddress.controls.shipping_address_1.hasError('required') && submitAddress" class="err-danger">
+                        {{ 'errorMessage.addressRequired'|translate }}
+                    </div>
+                    <ion-item>
+                        <ion-label>{{'address.address_2'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_address_2"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>{{'address.city'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_city"></ion-input>
+                    </ion-item>
+                    <div *ngIf="formAddress.controls.shipping_city.hasError('required') && submitAddress" class="err-danger">
+                        {{ 'errorMessage.cityRequired'|translate }}
+                    </div>
+                    <ion-item *ngIf="shipping_post_required != 'no'">
+                        <ion-label *ngIf="shipping_post_required == 'input_required'">{{'address.zip_2'|translate}}</ion-label>
+                        <ion-label *ngIf="shipping_post_required == 'input'">{{'address.zip'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_postcode"></ion-input>
+                    </ion-item>
+                    <div *ngIf="formAddress.controls.shipping_postcode.hasError('required') && submitAddress" class="err-danger">
+                        {{ 'errorMessage.zipRequired'|translate }}
+                    </div>
+                    <ion-item>
+                        <ion-label>{{'address.country'|translate}}</ion-label>
+                        <ion-select [selectOptions]="selectCountryOptions" [okText]="'general.done'|translate" type="text" formControlName="shipping_country"
+                            (ionChange)="changeCountryShipping($event)">
+                            <ion-option *ngFor="let country of countries" [value]="country.value">
+                                <span [innerHtml]="country.name"></span>
+                            </ion-option>
+                        </ion-select>
+                    </ion-item>
+                    <div *ngIf="formAddress.controls.shipping_country.hasError('required') && submitAddress" class="err-danger">
+                        {{ 'errorMessage.countryRequired'|translate }}
+                    </div>
+                    <ion-item *ngIf="statesShipping && statesShipping!='input' && statesShipping!='no' && statesShipping!='input_required'">
+                        <ion-label>{{'address.state'|translate}}</ion-label>
+                        <ion-select [selectOptions]="selectStateOptions" [okText]="'general.done'|translate" type="text" formControlName="shipping_state">
+                            <ion-option *ngFor="let state of statesShipping" [value]="state.value">
+                                <span [innerHtml]="state.name"></span>
+                            </ion-option>
+                        </ion-select>
+                    </ion-item>
+                    <ion-item *ngIf="(statesShipping && statesShipping=='input')">
+                        <ion-label>{{'address.state_optional'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_state"></ion-input>
+                    </ion-item>
+                    <ion-item *ngIf="statesShipping && statesShipping=='input_required'">
+                        <ion-label>{{'address.state'|translate}}</ion-label>
+                        <ion-input type="text" formControlName="shipping_state"></ion-input>
+                    </ion-item>
+                    <div *ngIf="formAddress.controls.shipping_state.hasError('required') && submitAddress" class="err-danger">
+                        {{ 'errorMessage.stateInputRequired'|translate }}
+                    </div>
+                </ion-list>
+            </form>
+        </div>
+        <div class="pb-44">
+            <button ion-button type="submit" class="form-custom-submit" [ngClass]="{'mb-150': keyboard_show}" *ngIf="!confirm_step" (click)="confirm()">
+                {{'address.confirm'|translate}}
+            </button>
+        </div>
+    </div>
+
+    <!-- payment-tab-->
+    <div class="payment-tab-checkout" *ngIf="activePayment" background-gray>
+        <ion-grid  no-padding background-light>
+            <div class="shipping-tab-checkout">
+                <!-- <div class="block-shipping" > -->
+                <div class="checkout-step-title">{{'checkout.shippingOption' | translate}}</div>
+                <div class="spinner-inline-wrapper" *ngIf="loading_ship">
+                    <ion-spinner name="ios" class="spinner-loading"></ion-spinner>
+                </div>
+                <div class="scroll-container" *ngIf="data_checkout.shipping && data_checkout.shipping.length>0">
+                    <div [@fadeIn]="''" class="child-block-shipping" secondary background-light border-recently text-center *ngFor="let item of data_checkout.shipping| orderBy:'price'"
+                        (click)="changeShipping(item)" [ngClass]="{'active1': shipping == item.id}">
+                        <ion-row class="title-shipping">
+                            <ion-col [ngClass]="{'active-child': shipping == item.id}">
+                                <ion-icon *ngIf="shipping == item.id" name="checkmark"></ion-icon>
+                                <div class="subtitle-shipping">{{item.title}}&#x200E;</div>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col *ngIf="item.price==0">
+                                <span green text-uppercase font-weight-500>{{'checkout.free' | translate}}</span>
+                            </ion-col>
+                            <ion-col *ngIf="item.price!=0">
+                                <span red font-weight-500>{{item.cost|price}}</span>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </div>
+            </div>
+        </ion-grid>
+        <ion-grid class="payment-method-wrapper border-t1">
+            <div class="checkout-step-title">{{'checkout.payment_info' | translate}}</div>
+            <div class="checkout-step-des" *ngIf="!payment_method_empty" light-gray>{{'checkout.payment_method'|translate}}</div>
+            <div class="err-danger no-margin" *ngIf="payment_method_empty">{{'checkout.payment_method_empty'|translate}}</div>
+            <div class="spinner-inline-wrapper" *ngIf="loading_payment">
+                <ion-spinner name="ios" class="spinner-loading"></ion-spinner>
+            </div>
+            <div class="list-payment-wrapper" *ngIf="data_checkout.payment">
+                <ion-list radio-group (ngOnChanges)="payment_method_empty=false" [(ngModel)]="payment" class="list-payment" no-margin>
+                    <div [@fadeIn]="''" class="payment-item" *ngFor="let item of data_checkout.payment">
+                        <button ion-item (click)="payment_method_empty=false; payment=item['id']" no-padding border-radius-1 class="payment-items">
+                            <ion-label>
+                                <span dark>{{item.title}}&#x200E;</span>
+                            </ion-label>
+                            <ion-radio [attr.checked]="(payment==item['id']) ? 'true' : 'false'" class="radio-checkout-item" [value]="item.id"></ion-radio>
+                        </button>
+                        <div class="payment-des" *ngIf="payment==item['id']" [innerHTML]="item.description"></div>
+                    </div>
+                </ion-list>
+            </div>
+        </ion-grid>
+        <div class="payment-submit border-t1">
+            <button class="form-custom-submit" ion-button (click)="confirmShippingPay()">{{'checkout.continue'|translate}}</button>
+        </div>
+        <!-- <button ion-button (click)="scrollTop()">scrolltop</button> -->
+    </div>
+    
+    <!-- confirm tab -->
+    <div class="confirm-tab-checkout" *ngIf="activeConfirm" background-gray>
+        <div class="confirm-tab-title">
+            <div class="checkout-step-title">{{'checkout.order_detail'|translate}}</div>
+            <div class="order-total-items" (click)="showProductList()" *ngIf="(cart|ObjectToArray).length > 0">{{totalItem(cart)}}
+                <span [ngClass]="{'active': !checklist}" class="icomoon-arrow-down"></span>
+            </div>
+        </div>
+
+        <!-- List product -->
+        <ion-list  class="list-product" *ngIf="!checklist">
+            <ion-item [@fadeIn]="''" *ngFor="let product of (cart|ObjectToArray)" no-lines no-padding relative class="item-product">
+                <div class="product-line-brief">
+                    <div class="product-img" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                        <img *ngIf="product.images" [src]="product.images" />
+                        <img *ngIf="!product.images" src="assets/images/no-image.png" />
+                    </div>
+                    <div class="product-body">
+                        <div class="product-title" [navPush]="DetailPage" [navParams]="{id:product.id}" [innerHTML]="product.name | truncate:[50]"></div>
+                        <div class="product-attributes">
+                            <span *ngFor="let attr of (product.attributes|ObjectToArray), let i = index">
+                                <span *ngIf="(i + 1) !=  (product.attributes|ObjectToArray).length">{{attr.option}},</span>
+                                <span *ngIf="(i + 1) ==  (product.attributes|ObjectToArray).length">{{attr.option}}</span>
+                            </span>
+                        </div>
+                        <div class="product-info">
+                            <div class="info-left">
+                                <span>{{product.price|price}}</span>
+                                <span class="qty">{{'checkout.qty' | translate}}
+                                    <span>{{product.quantity}}</span>
+                                </span>
+                            </div>
+                            <div class="info-right">
+                                <span>
+                                    <!--     <span class="price-brief">{{'checkout.rs' | translate}}</span> -->
+                                    {{(product.price*product.quantity) | price}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ion-item>
+        </ion-list>
+        <div light-bg dark class="totals" *ngIf="data" padding-5-0>
+            <!-- <div margin-bottom><b dark text-uppercase>{{'checkout.totals'|translate}}</b></div> -->
+            <ion-row>
+                <ion-col>{{'checkout.total_price'|translate}}</ion-col>
+                <ion-col text-right>{{data_checkout._subtotal|price}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>{{'checkout.shipping'|translate}}</ion-col>
+                <ion-col text-right *ngIf="data_checkout._shipping==0" green>{{'checkout.free'|translate}}</ion-col>
+                <ion-col text-right *ngIf="0<data_checkout._shipping">{{data_checkout._shipping|price}}</ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>{{'checkout.tax'|translate}}</ion-col>
+                <ion-col text-right>{{data_checkout._tax|price}}</ion-col>
+            </ion-row>
+            <div *ngIf="data_checkout.total.discount">
+                <ion-row *ngFor="let coupon of data_checkout.total.discount">
+                    <ion-col width-66>
+                        <span class="coupon-title">{{'checkout.coupon_code'|translate}}</span>
+                        <!--   <span class="coupon-des" *ngIf="coupon.amount == '%'">(<span class="inline-flex">{{coupon.code}}</span>)</span> -->
+                        <span class="coupon-des">(
+                            <span class="inline-flex">{{coupon.code}}</span>: -{{coupon.amount}})</span>
+                    </ion-col>
+                    <ion-col text-right primary>-{{coupon.value|price}}</ion-col>
+                </ion-row>
+            </div>
+            <!--     <ion-row>
+                <ion-col><b dark>{{'checkout.order_total'|translate}}</b></ion-col>
+                <ion-col font-weight-500 text-right>{{ total_order | price}}</ion-col>
+            </ion-row> -->
+            <ion-row class="order-amount">
+                <ion-col>{{'checkout.order_total'|translate}}</ion-col>
+                <ion-col *ngIf="total_order || total_order == 0" text-right>{{ total_order | price}}</ion-col>
+            </ion-row>
+        </div>
+
+        <div background-light class="shipping-box" *ngIf="shipping">
+            <div margin-top-7 padding class="border-t1">
+                <ion-row>
+                    <ion-col no-padding>
+                        <div class="confirm-title" width-100>
+                            <span secondary uppercase>{{'checkout.modetransport' | translate}}</span>
+                            <ion-icon (click)="editShipping()" padding-5 border border-radius font-size-11 primary name="icon-pent" float-right></ion-icon>
+                        </div>
+                        <p width-100 no-margin>{{data_checkout.title_shipping}}
+                            <span *ngIf="data_checkout._shipping != 0" class="inline-flex" red>({{data_checkout._shipping | price}})</span>
+                            <span *ngIf="data_checkout._shipping == 0" class="inline-flex" green>({{'checkout.free' | translate}})</span>
+                        </p>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </div>
+        <div background-light class="shipping-box">
+            <div margin-top-7 padding class="border-t1">
+                <ion-row>
+                    <ion-col no-padding>
+                        <div class="confirm-title" width-100>
+                            <span secondary uppercase margin-top-7>{{'checkout.paymentmethod' | translate}}</span>
+                            <ion-icon (click)="editShipping()" padding-5 border border-radius font-size-11 primary name="icon-pent" float-right></ion-icon>
+                        </div>
+                        <p width-100 no-margin *ngIf="data_checkout.title_payment">
+                            <span>{{data_checkout.title_payment}}</span>
+                        </p>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </div>
+        <div background-light class="shipping-box shipping-address">
+            <div margin-top-7 padding class="border-t1">
+                <ion-row>
+                    <ion-col no-padding>
+                        <div class="confirm-title" width-100>
+                            <span secondary uppercase>{{'checkout.addressinfo' | translate}}</span>
+                            <ion-icon (click)="editAddress()" padding-5 border border-radius font-size-11 primary name="icon-pent" float-right></ion-icon>
+                        </div>
+                    </ion-col>
+                </ion-row>
+                <div class="shipping-box-drowdown">
+                    <div class="block-address">
+                        <ion-row>
+                            <ion-col (click)="showAddress()">
+                                <b secondary>{{'checkout.shipping_address' | translate}}</b>
+                                <span class="icomoon-arrow-down" [ngClass]="{'active' : checkAdd}"></span>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="shipping-dropdown-content" *ngIf="checkAdd" border-bottom-solid-1>
+                            <ion-col>
+                                <div *ngIf="user">
+                                    <p>{{user.shipping_first_name}} {{user.shipping_last_name}}</p>
+                                    <p>{{user.shipping_company}}</p>
+                                    <p>{{user.shipping_address_1}}</p>
+                                    <p>{{user.shipping_address_2}}</p>
+                                    <p>{{user.shipping_city}}, {{user.shipping_postcode}}</p>
+                                    <p *ngIf="user.shipping_country" [innerHTML]="findCountryFormCode(user.shipping_country)"></p>
+                                    <p>{{user.shipping_state}}</p>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                    <div class="block-address no-margin">
+                        <ion-row>
+                            <ion-col (click)="showBilling()">
+                                <b secondary>{{'checkout.billing_address' | translate}}</b>
+                                <span class="icomoon-arrow-down" [ngClass]="{'active' : checkBill}"></span>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="checkBill" class="shipping-dropdown-content">
+                            <ion-col>
+                                <div *ngIf="user">
+                                    <p>{{user.billing_first_name}} {{user.billing_last_name}}</p>
+                                    <p>{{user.billing_company}}</p>
+                                    <p>{{user.billing_address_1}}</p>
+                                    <p>{{user.billing_address_2}}</p>
+                                    <p>{{user.billing_city}}, {{user.billing_postcode}}</p>
+                                    <p *ngIf="user.billing_country" [innerHTML]="findCountryFormCode(user.billing_country)"></p>
+                                    <p>{{user.billing_state}}</p>
+                                    <p>{{user.billing_phone}}</p>
+                                    <p>{{user.user_email}}</p>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div background-light class="confirm-note">
+            <div margin-top-7 padding class="border-t1">
+                <div class="confirm-note-title">
+                    <span class="icomoon-note"></span>
+                    {{'checkout.note' | translate}}
+                </div>
+                <ion-textarea (ionBlur)="activeNote=false" (ionFocus)="activeNote=true" placeholder="{{'checkout.addnote' | translate}}" [(ngModel)]="note"></ion-textarea>
+            </div>
+        </div>
+        <div background-light class="checkbox-privacy-wrapper">
+            <div class="checkbox-privacy">
+                <ion-checkbox [(ngModel)]="check_privacy"></ion-checkbox>
+                <div class="privacy-title">{{'checkout.check_privacy'|translate}}
+                    <span (click)="openPopupTerms()">{{'checkout.check_privacy_next'|translate}}</span>
+                </div>
+            </div>
+            <div class="err-danger" *ngIf="!check_privacy && submitAll">
+                {{'checkout.check_privacy_required'|translate}}
+            </div>
+        </div>
+        <div padding background-light *ngIf="data_checkout" class="pb-44">
+            <button class="form-custom-submit" ion-button (click)="checkoutProcess()" [ngClass]="{'mb-200': activeNote}">{{'checkout.continue'|translate}}</button>
+        </div>
+    </div>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

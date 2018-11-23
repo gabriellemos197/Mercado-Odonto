@@ -1,0 +1,371 @@
+<ion-header>
+
+    <ion-navbar>
+        <div class="header-wrapper">
+            <ion-title *ngIf="detail && detail.type!='grouped'">{{'detail.title' | translate}}</ion-title>
+            <ion-title *ngIf="detail && detail.type=='grouped'">{{'detail.title_group' | translate}}</ion-title>
+            <ion-buttons end>
+                <button ion-button secondary right font-size-20 (click)="shareLink(detail.permalink)">
+                    <ion-icon light name="md-share"></ion-icon>
+                </button>
+            </ion-buttons>
+        </div>
+    </ion-navbar>
+</ion-header>
+
+<div class="page-loading" *ngIf="!loaded_data">
+    <ion-spinner name="ios"></ion-spinner>
+</div>
+
+<ion-content class="detail-content" [ngClass]="{'no-scroll': !page_allow_scroll}">
+    <div *ngIf="detail" class="page-content selectable" [@fadeInLonger]="''">
+        <div class="breadcums-block" background-light border-bottom-solid-1>
+            <ul class="breadcums">
+                <li class="item-breadcums" relative (click)="popToRoot()">
+                    <ion-icon font-size-20 name="icon-home"></ion-icon>
+                </li>
+                <li *ngIf="detail.categories && detail.categories[0] && detail.categories[0].name" class="item-breadcums" [navPush]="DetailcategoryPage"
+                    [navParams]="{id: detail.categories[0].id}">
+                    <span [innerHTML]="detail.categories[0].name"></span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="detail-top-wrapper">
+            <!--info-->
+            <ion-grid no-padding>
+                <div class="product-detail-top">
+                    <div class="product-name" [innerHTML]="detail.name"></div>
+                    <div class="product-info" [ngClass]="{'hide-sale': hide_sale}">
+                        <div class="product-rating">
+                            <ion-icon name="icon-star" [ngClass]="{'text-orange': detail.average_rating}"></ion-icon>
+                            <span class="text-orange" *ngIf="detail.average_rating">{{detail.average_rating |number:'1.1-1'}}</span>
+                            <span *ngIf="!detail.average_rating">0</span>
+                        </div>
+                        <div class="product-info-cmt">
+                            <ion-icon name="icon-comment"></ion-icon>
+                            <span>{{total_comment}}</span>
+                        </div>
+                        <div class="product-sold">
+                            <span class="product-total-sold" *ngIf="!detail.total_sales">
+                                <ion-icon font-size-14 name="icon-icon"> </ion-icon> 0{{'detail.sold' | translate}}
+                            </span>
+                            <span class="product-total-sold" *ngIf="detail.total_sales">
+                                <ion-icon font-size-14 name="icon-icon"> </ion-icon>
+                                {{detail.total_sales}}{{'detail.sold' | translate}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-slide">
+                    <div class="product-slide-content">
+                        <ion-slides #slides_product_img *ngIf="slide_img.length > 0 && slide_img[0].cellstore_square" autoplay="{{slide_period}}"
+                            pager="true" dir="{{dir_mode}}" (ionSlideDidChange)="changeSlides($event)">
+                            <ion-slide *ngFor="let image of slide_img">
+                                <img [src]="image.cellstore_square" imageViewer />
+                            </ion-slide>
+                        </ion-slides>
+                        
+                        <div class="label-status out_stock" *ngIf="!detail.in_stock || (detail.stock_quantity != null && detail.stock_quantity <= 0 && !detail.backordered)">{{'detail.out_stock'|translate}}</div>
+                        <div class="label-status" *ngIf="detail.in_stock && (detail.stock_quantity == null || detail.stock_quantity > 0) || detail.backordered">{{'detail.in_stock'|translate}}</div>
+
+                        <div class="sale-label" *ngIf="detail.price < detail.regular_price
+                            && detail.type!='variable' && detail.type!='grouped'">
+                            {{-((detail.regular_price - detail.price)*100)/detail.regular_price | number:'1.0-0'}}%</div>
+                        <div class="product-no-image" *ngIf="!detail.cellstore_images || !detail.cellstore_images[0].cellstore_square">
+                            <img src="assets/images/no-image.png" />
+                        </div>
+                        <div class="icon-favorite" [ngClass]="{'active-favorite': favorite[id]}" (click)="changeFavorite()">
+                            <span class="icomoon-heart"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-category" *ngIf="(brand_parent.name || brand.name)
+                        && dir_mode=='ltr'">
+                    <span class="brand-title">{{'detail.brand'|translate}}</span>
+                    <span class="brand-parent" [navPush]="BrandPage" [navParams]="{id: brand_parent.id, name: brand_parent.name}">
+                        {{brand_parent.name}}</span>
+                    <span *ngIf="brand.name" [navPush]="BrandPage" [navParams]="{id: brand.id, name: brand.name}">{{'detail.view_brand_1'|translate}} {{brand.name}} {{'detail.view_brand_2'|translate}} {{brand_parent.name}}</span>
+                    <span [navPush]="BrandPage" [navParams]="{id: brand_parent.id, name: brand_parent.name}" *ngIf="!brand.name && brand_parent.name">{{'detail.view_brand_1'|translate}} {{'detail.view_brand_2'|translate}} {{brand_parent.name}}</span>
+                </div>
+
+                <div class="detail-category" *ngIf="(brand_parent.name || brand.name)
+                        && dir_mode=='rtl'" dir="ltr">
+                    <span *ngIf="brand.name" [navPush]="BrandPage" [navParams]="{id: brand.id, name: brand.name}">{{'detail.view_brand_1'|translate}} {{brand.name}} {{'detail.view_brand_2'|translate}} {{brand_parent.name}}</span>
+                    <span [navPush]="BrandPage" [navParams]="{id: brand_parent.id, name: brand_parent.name}" *ngIf="!brand.name && brand_parent.name">{{'detail.view_brand_1'|translate}} {{'detail.view_brand_2'|translate}} {{brand_parent.name}}</span>
+                    <span class="brand-parent" [navPush]="BrandPage" [navParams]="{id: brand_parent.id, name: brand_parent.name}">
+                        {{brand_parent.name}}</span>
+                    <span class="brand-title">{{'detail.brand'|translate}}</span>
+                </div>
+
+                <div class="detail-price-wrapper">
+                    <span class="detail-price" [innerHTML]="detail.price_html"></span>
+                </div>
+
+                <div class="detail-gift" *ngIf="textStatic.cellstore_gift_title">
+                    <div class="gift-wrapper">
+                        <div class="gift-title-wrapper">
+                            <img src="assets/images/gift.png" />
+                            <span class="gift-title" [innerHTML]="textStatic.cellstore_gift_title"></span>
+                        </div>
+                        <div *ngIf="textStatic.cellstore_gift_content" class="gift-content">
+                            <span [innerHTML]="textStatic.cellstore_gift_content | safeHtml"></span>
+                        </div>
+                    </div>
+                </div>
+            </ion-grid>
+        </div>
+
+        <div *ngIf="detail.type != 'grouped' && detail.type != 'external'">
+            <div class="detail-attributes-wrapper border-t1" *ngIf="(detail.attributes && detail.attributes.length>0) || (detail.in_stock && detail.stock_quantity == null) || (detail.in_stock && detail.stock_quantity > 0) || detail.backordered">
+                <div *ngIf="no_variation && product_available" class="err-danger">{{"errorMessage.no_variation"|translate}}</div>
+                <div *ngIf="no_variation && !product_available" class="err-danger">{{"errorMessage.no_variation_2"|translate}}</div>
+                <ul class="detail-attributes" *ngIf="detail.type != 'simple'">
+                    <li *ngFor="let attr of detail.attributes | orderBy: 'name'">
+                        <div *ngIf="attr.variation">
+                            <div class="attribute-title" [innerHTML]="attr.name"></div>
+                            <ion-list radio-group *ngIf="(attr.name|lowercase) == ('detail.color'|translate)" class="attribute-color" [(ngModel)]="attributes[attr.name].option"
+                                (ngModelChange)="checkVariation()">
+                                <div class="color-item" *ngFor="let option of attr.options">
+                                    <div class="radio-wrapper" [style.border-color]="(attributes[attr.name].option|lowercase) == (option|lowercase) ? option : 'transparent'">
+                                        <ion-radio [value]="option" [style.background]="option"></ion-radio>
+                                    </div>
+                                </div>
+                            </ion-list>
+                            <ion-list radio-group *ngIf="(attr.name|lowercase) != ('detail.color'|translate)" class="attribute-option" [(ngModel)]="attributes[attr.name].option"
+                                (ngModelChange)="checkVariation()">
+                                <ion-item *ngFor="let opt of attr.options | orderBy:opt">
+                                    <ion-radio [value]="opt"></ion-radio>
+                                    <ion-label>{{opt}}</ion-label>
+                                </ion-item>
+                            </ion-list>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="detail-quantity" *ngIf="(detail.in_stock && detail.stock_quantity == null) || (detail.in_stock && detail.stock_quantity > 0) || detail.backordered" [ngClass]="{'pd-16': detail.type=='simple'}">
+                    <div class="detail-property-title">
+                        <div>{{'detail.quantity'|translate}}</div>
+                        <div class="quantity-available" *ngIf="!hide_available_stock && detail.stock_quantity != null && detail.stock_quantity >= 0" >({{detail.stock_quantity}} {{'detail.available'|translate}})</div>
+                    </div>
+                    <button-quantity [(ngModel)]="quantity" [max]="detail.stock_quantity"></button-quantity>
+                </div>
+            </div>
+        </div>
+        <!-- / .detail-attributes-wrapper -->
+
+        <div background-light class="detail-property-box border-t1" padding *ngIf="detail.type=='grouped'">
+            <div *ngFor="let product of groupedProduct; let i = index" class="item-product-grouped">
+                <div class="product-grouped-item">
+                    <div class="product-img" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                        <img *ngIf="!product.cellstore_images[0].cellstore_square" src="assets/images/no-image.png">
+                        <img *ngIf="product.cellstore_images[0].cellstore_square" [src]="product.cellstore_images[0].cellstore_square">
+                    </div>
+                    <div class="product-body">
+                        <div class="product-title" [innerHTML]="product.name | truncate:[50]" [navPush]="DetailPage" [navParams]="{id:product.id}"></div>
+                        <div class="product-info">
+                            <span class="product-price" [innerHTML]="product.price_html"></span>
+                            <span class="sale-info" *ngIf="product.price < product.regular_price
+                                && product.type=='simple'">
+                                {{((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}% {{'detail.off'|translate}}</span>
+                        </div>
+                        <div *ngIf="!product.in_stock || (product.stock_quantity != null && product.stock_quantity <= 0 && !detail.backordered)" class="item-outstock">
+                            <span class="icomoon-close">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </span>
+                            {{'detail.out_stock'|translate}}
+                        </div>
+                        <div *ngIf="product.type == 'simple' && (detail.in_stock && (detail.stock_quantity == null || detail.stock_quantity > 0) || detail.backordered)">
+                            <div class="sold-indivisual-title" *ngIf="product.sold_individually">{{'detail.sold_indivisual'|translate}}</div>
+                            <div class="product-item-add" *ngIf="product.sold_individually && !inCart(product.id, cart)" (click)="quickAddCart(product, $event)">
+                                {{'detail.add_item'|translate}}
+                            </div>
+                            <div class="product-item-add active" *ngIf="inCart(product.id, cart) && product.sold_individually">
+                                <ion-icon name="ios-checkmark"></ion-icon>
+                            </div>
+                            <div class="test" *ngIf="product.in_stock && (product.stock_quantity == null || product.stock_quantity > 0) || product.backordered">
+                                <button-quantity *ngIf="!product.sold_individually" [(ngModel)]="groupedProduct[i].quantity" [min]="0" [max]="product.stock_quantity"></button-quantity>
+                            </div>
+                        </div>
+                        <div class="info-option" *ngIf="product.type != 'simple' && product.type != 'external'" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                            <span class="icomoon-arrow-right-circle"></span>
+                            {{'detail.option'|translate}}
+                        </div>
+                        <div class="info-option" *ngIf="product.type == 'external'" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                            <span class="icomoon-link"></span>
+                            {{'detail.affiliate'|translate}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- description-->
+        <div background-light class="detail-property-box border-t1" padding *ngIf="short_description">
+            <div class="detail-property-title">{{'detail.moreinfo'|translate}}</div>
+            <div class="detail-des" [innerHTML]="short_description"></div>
+            <div *ngIf = "showmore" [innerHTML]="full_description"></div>
+            <div class="detail-des" *ngIf="full_description && !showmore">
+                <div text-center (click)="showMoreInfo(detail.description)">
+                    <span primary>{{'detail.readmore' | translate}}</span>
+                </div>
+            </div>
+        </div>
+        <div background-light class="detail-property-box border-t1" padding *ngIf="!short_description && full_description">
+            <div class="detail-property-title">{{'detail.moreinfo'|translate}}</div>
+            <div [innerHTML]="full_description"></div>
+        </div>
+
+        <div background-light class="detail-property-box detail-description border-t1" padding *ngIf="detail.attributes.length >0">
+            <div class="detail-property-title">{{'detail.item_description'|translate}}</div>
+            <ul>
+                <div *ngFor="let attr of detail_description, let i = index">
+                    <li *ngIf="(i<4 && !show_item_des) || show_item_des">
+                        <div class="item_des_attr">
+                            <div class="des-left" [innerHTML]="attr.name"></div>
+                            <div class="des-right" [innerHTML]="attr.des"></div>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+            <div *ngIf="detail_description.length > 4 && !show_item_des" (click)="show_item_des=true" class="detail-view-more">
+                {{'detail.view_all' | translate}}
+            </div>
+        </div>
+        <!-- / .detail-description -->
+
+        <div background-light class="detail-property-box border-t1" padding *ngIf="textStatic.cellstore_description_buyer_product">
+            <div class="detail-property-title">{{'detail.buyer_protection'|translate}}</div>
+            <div [innerHTML]="textStatic.cellstore_description_buyer_product"></div>
+            <div class="detail-delivery" *ngIf="textStatic.cellstore_ontime_delivery_title || textStatic.cellstore_ontime_delivery_content">
+                <div>{{textStatic.cellstore_ontime_delivery_title}}</div>
+                <div [innerHTML]="textStatic.cellstore_ontime_delivery_content"></div>
+            </div>
+        </div>
+
+        <div background-light class="detail-property-box detail-review-wrapper border-t1" [ngClass]="{'no-comment': comments.length == 0, 'pb-80': suggested_product.length < 1}"
+            padding>
+            <div class="review-header">
+                <div class="detail-property-title">
+                    {{'detail.review'|translate}}
+                    <span class="inline-flex">({{total_comment}})</span>
+                </div>
+                <button class="btn-show-rating" [ngClass]="{'hidden': !detail.reviews_allowed }" (click)="showRating()">
+                    <ion-icon name="icon-change-info"></ion-icon>
+                    <span>{{'detail.write' | translate}}</span>
+                </button>
+            </div>
+            <div *ngIf="comments.length > 0" class="details-review-wrapper" [ngClass]="{'no-border': comments.length < 4}">
+                <div *ngFor="let review of comments; let i=index ">
+                    <div *ngIf="i<3" class="review-item">
+                        <div class="review-image">
+                            <div class="image" *ngIf="review.link_avatar" [style.background-image]="'url(' + review.link_avatar + ')'"></div>
+                            <div class="image" *ngIf="!review.link_avatar" style='background-image: url(assets/images/person.png)'></div>
+                        </div>
+                        <div class="review-body">
+                            <div class="review-top">
+                                <div class="review-name">{{review.user}}</div>
+                                <div class="review-time">{{review.comment_date_gmt|timeAgo}}</div>
+                                <div class="review-rating">
+                                    <ion-icon name="icon-star" class="rating-star"></ion-icon>
+                                    <span class="rating-star" *ngIf="review.rating">{{review.rating}}</span>
+                                </div>
+                            </div>
+                            <div class="review-content" [innerHTML]="review.comment_content|breakLine"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="comments.length >3" class="comment-more">
+                <span primary [navPush]="CommentPage" [navParams]="{id: detail.id, reviews_allowed: detail.reviews_allowed }">{{'detail.view_all' | translate}}</span>
+            </div>
+        </div>
+        <!-- / .detail-review-wrapper -->
+
+        <div background-light class="detail-property-box detail-suggest border-t1" *ngIf="suggested_product.length > 0">
+            <div class="detail-property-title" padding>{{'detail.suggested'|translate}}</div>
+            <div class="block-search-product">
+                <ion-row>
+                    <ion-col col-6 no-padding border-bottom-solid-1 border-right *ngFor="let product of suggested_product">
+                        <div class="product-small">
+
+
+                            <div *ngIf="product.date_created_gmt | isNew" class="new-label">
+                                <span>{{ 'home.new'|translate}}</span>
+                            </div>
+                            <div class="sale-label" *ngIf="product.price < product.regular_price
+                                    && product.type!='variable' && product.type!='grouped'">
+                                {{-((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</div>
+                            <div class="product-top" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                                <img *ngIf="product.images && product.images.cellstore_square" [src]="product.images.cellstore_square" />
+                                <img *ngIf="!product.images || !product.images.cellstore_square" src="assets/images/no-image.png" />
+                            </div>
+                            <div class="product-price">
+                                <span class="new-price" [innerHTML]="product.price_html"></span>
+                            </div>
+                            <div class="product-name" [navPush]="DetailPage" [navParams]="{id:product.id}" [innerHTML]="product.title | truncate:[30]"></div>
+                            <div class="product-info" [ngClass]="{'hide-sale': hide_sale}" *ngIf=" product.average_rating || product.total_sales">
+                                <div class="product-rating" [ngClass]="{'hidden': product.average_rating==''}">
+                                    <ion-icon name="icon-star" class="text-orange"></ion-icon>
+                                    <span class="text-orange" *ngIf="product.average_rating">{{product.average_rating |number:'1.1-1'}}</span>
+                                </div>
+                                <div class="product-sold" [ngClass]="{'hidden': product.total_sales==''}">
+                                    <span class="product-total-sold" *ngIf="product.total_sales">{{product.total_sales}}{{'home.sold' | translate}}</span>
+                                </div>
+                            </div>
+                            <div class="product-bottom">
+                                <div class="product-action" *ngIf="(product.in_stock && product.stock_quantity == null) || (product.in_stock && product.stock_quantity > 0) || product.backordered">
+                                    <button *ngIf="product.type == 'simple'" (click)="quickAddCart(product, $event)" class="action-type action-cart">
+                                    <span class="icomoon-cart-add"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                                    {{'general.addToCart' | translate}}
+                                    </button>
+                                    <button *ngIf="product.type != 'simple'" [navPush]="DetailPage" [navParams]="{id:product.id}" class="action-type action-choose">
+                                        {{'general.chooseOption' | translate}}
+                                    </button>
+                                    <span [ngClass]="{'active': inCart(product.id, cart)}" class="icomoon-cart-check">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / .product-small -->
+                    </ion-col>
+                </ion-row>
+            </div>
+            <ion-infinite-scroll (ionInfinite)="loadMoreSuggest($event)">
+                <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
+        </div>
+        <!-- / .detail-property-box -->
+    </div>
+</ion-content>
+<ion-footer [@fadeInLonger]="''" *ngIf="detail && !hide_footer">
+    <div class="detail-footer">
+        <div class="cart-action-wrapper">
+            <button class="cart-action" *ngIf="detail.type!='external'" ion-button (click)="addToCart()">
+                <span class="icomoon-plus"></span>
+                {{'detail.addToCart'|translate}}
+            </button>
+            <button class="cart-action" *ngIf="detail.type=='external'" ion-button (click)="openLink(detail.external_url)">
+                <span class="icomoon-link-url"></span>
+                {{'detail.goToProduct'|translate}}
+            </button>
+        </div>
+        <div class="cart-details" [navPush]="CartPage">
+            <div class="cart-icon">
+                <ion-icon name="icon-cart"></ion-icon>
+                <button ion-button class="label-number" [ngClass]="{'lg': cart_total_item >= 100}">{{cart_total_item}}</button>
+            </div>
+            <div class="cart-content">
+                <div class="sum">{{totalprice | price}}</div>
+                <div>{{'detail.buynow'|translate}}</div>
+            </div>
+        </div>
+    </div>
+</ion-footer>

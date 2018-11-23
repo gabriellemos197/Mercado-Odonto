@@ -1,0 +1,65 @@
+<ion-header>
+
+    <ion-navbar>
+        <div class="header-wrapper">
+            <ion-title>{{'order.title' | translate}} </ion-title>    
+        </div>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content id="order-content" (scroll)="scrollHandler($event)" [ngClass]="{'page-empty': checkOrder && (data|ObjectToArray).length == 0}">
+    <div class="page-loading pb-44" *ngIf="!loaded_data">
+        <ion-spinner name="ios"></ion-spinner>
+    </div>
+
+    <div [@fadeIn]="''" class="order_empty" *ngIf="checkOrder && (data|ObjectToArray).length == 0">
+        <div class="order_emtpy_img">
+            <img width-35 src="assets/images/order.png" />
+        </div>
+        <div class="order_empty_title">{{'order.message' | translate}}</div>
+        <button ion-button (click)="shop()">{{'order.shop'|translate}}</button>
+    </div>
+
+    <div class="page-wrapper" background-light *ngIf="checkOrder && (data|ObjectToArray).length > 0">
+        <!-- oerder list-->
+        <ion-grid no-padding class="order-wrapper" background-gray>
+            <ion-row [@fadeIn]="''" *ngFor="let order of data, let i = index" class="item-order" [navPush]="OrderdetailPage" [navParams]="{id:order.id}">
+                <ion-col>
+                    <div class="order-id">{{'order.id'|translate}}
+                        <span>{{order.id}}</span>
+                    </div>
+                    <div with-100>
+                        <ion-row>
+                            <ion-col col-6 no-padding>
+                                <p uppercase font-size-11 order-color>{{'order.qty' | translate}}</p>
+                                <p class="order-info">{{totalItem(order.line_items)}}</p>
+                                <p uppercase font-size-11 order-color>{{'order.orderdate' | translate}}</p>
+                                <p class="order-info">{{order.date_modified_gmt | date: 'dd/MMM/yyyy'}}</p>
+                            </ion-col>
+                            <ion-col col-6 no-padding>
+                                <p uppercase font-size-11 order-color>{{'order.total' | translate}}</p>
+                                <p class="order-info" *ngIf="order.total" [innerHTML]="order.total"></p>
+                                <p uppercase font-size-11 order-color>{{'order.buyer' | translate}}</p>
+                                <p class="order-info info-arrow">{{order.billings.billing_first_name}} {{order.billings.billing_last_name}}
+                                    <span class="icomoon-right-arrow order-go"></span>
+                                </p>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+
+                </ion-col>
+                <div class="order-label-status">
+                    <span [ngClass]="order.status|lowercase">{{order.status}}</span>
+                </div>
+            </ion-row>
+        </ion-grid>
+
+        <ion-infinite-scroll class="border-t1" (ionInfinite)="load($event)">
+            <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+    </div>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

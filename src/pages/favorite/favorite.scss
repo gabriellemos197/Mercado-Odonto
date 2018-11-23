@@ -1,0 +1,82 @@
+page-favorite {
+    .block-search-product {
+        border-top: none;
+        margin-bottom: 0;
+    }
+
+	.no-favorite{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+        margin-top: -30px;
+        width: 100%;
+
+		.icomoon-heart {
+			font-size: 6.5rem;
+			color: #ff1443;
+			margin: 0 auto;
+        }
+        
+        .no-favorite-title {
+            font-size: 1.5rem;
+            padding: 5px 0 25px;
+        }
+
+        .button {
+            border-radius: 0;
+            padding: 0 20px;
+        }
+
+        .btn-primary {
+            height: 4rem;
+            line-height: 4rem;
+            font-size: 1.6rem;
+            background: $background-primary;
+            color: #fff;
+            padding: 0 18px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+
+            &:hover,
+            &:focus {
+                opacity: 0.8;
+            }
+        }
+	}
+
+
+    .favorite-clear {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        background: #fff;
+        border-radius: 50%;
+        z-index: 9;
+        font-size: 15px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $color-light-gray;
+        transition: all 0.3s ease;
+    }
+
+    .favorite-clear-all {
+        font-size: 1.4rem;
+        position: absolute;
+        color: #fff;
+        height: 32px;
+        padding: 0;
+        margin: 0;
+        vertical-align: bottom;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+    }
+
+}

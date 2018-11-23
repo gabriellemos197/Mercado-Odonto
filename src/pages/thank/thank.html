@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-navbar hideBackButton="true" (click)="goHome()">
+        <div class="header-wrapper">    
+            <ion-title>
+                <div class="header-logo">
+                    <img src="assets/images/logo.png" />
+                </div>
+            </ion-title>
+        </div>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <div class="full-spinner" [ngClass]="{'active': !id}">
+        <ion-spinner name="ios"></ion-spinner>
+    </div>
+    <div class="thank_wrapper" *ngIf="id">
+        <div class="thank_img">
+            <img src="assets/images/thank.png" />
+        </div>
+        <div class="thank_title">{{'thank.thankyou' | translate}}</div>
+        <div *ngIf="!bank_payment" class="thank_msg">{{'thank.message' | translate}}</div>
+        <div *ngIf="bank_payment" class="thank_msg">{{'thank.message_for_bacs' | translate}}</div>
+        <div class="order-id">{{'thank.order_id' | translate}}
+            <span>{{id}}</span>
+        </div>
+        <div class="thank_action">
+            <button *ngIf="isLogin" margin-auto uppercase ion-button block [navPush]="OrderdetailPage" [navParams]="{'id': id, 'parent': 'ThankPage'}">{{'thank.trackorder'|translate}}</button>
+            <button class="btn-red" margin-auto uppercase ion-button block (click)="goHome()">{{'thank.continueshop'|translate}}</button>
+        </div>
+    </div>
+</ion-content>

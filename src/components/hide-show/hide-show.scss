@@ -1,0 +1,17 @@
+hide-show {
+	display:block;
+    border-bottom: solid 1px #f8f8f8;
+    
+	.button-change{
+		box-shadow:none;
+		.button-inner{
+			-webkit-justify-content: space-between;
+			-ms-flex-pack: space-between;
+			justify-content: space-between;
+		}
+	}
+	.hide-show-content{
+		overflow:auto;
+		background:color($colors, light);
+	}
+}

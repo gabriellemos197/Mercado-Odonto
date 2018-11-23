@@ -1,0 +1,64 @@
+<ion-header>
+
+    <ion-navbar>
+        <div class="header-wrapper"> 
+            <ion-title>{{'profile.title' | translate}}</ion-title>
+        </div>
+    </ion-navbar>
+
+</ion-header>
+<ion-content padding>
+    <div *ngIf="data" max-width-100 width-100>
+        <ion-grid class="profile-wrapper">
+            <ion-row text-center>
+                <ion-col>
+                    <div class="avatar-change" relative>
+                        <div class="avatar-img" *ngIf="avatar" [style.background-image]="DomSanitizer.bypassSecurityTrustStyle('url('+avatar+')')"></div>
+                        <div class="avatar-img" *ngIf="!avatar" [style.background-image]="'url(assets/images/account.png)'"></div>
+                        <div absolute class="wrap-icon-image" (click)="editAvatar()">
+                            <span class="icomoon-landscape"></span>
+                        </div>
+                    </div>
+                </ion-col>
+            </ion-row>
+            <ion-row no-padding>
+                <ion-col>
+                    <form [formGroup]="formEdit" ng-submit="save()">
+                        <ion-list class="form-custom">
+                            <ion-item>
+                                <ion-label>{{'profile.first_name' | translate}}</ion-label>
+                                <ion-input type="text" formControlName="first_name"></ion-input>
+                            </ion-item>
+                            <div *ngIf="formEdit.controls.first_name.hasError('required') && submitAttempt" class="err-danger">
+                                {{ 'errorMessage.nameRequired'|translate }}
+                            </div>
+                            <ion-item>
+                                <ion-label>{{'profile.last_name' | translate}}</ion-label>
+                                <ion-input type="text" formControlName="last_name"></ion-input>
+                            </ion-item>
+                            <div *ngIf="formEdit.controls.last_name.hasError('required') && submitAttempt" class="err-danger">
+                                {{ 'errorMessage.nameRequired'|translate }}
+                            </div>
+                            <ion-item>
+                                <ion-label>{{'profile.email' | translate}}</ion-label>
+                                <ion-input type="text" formControlName="user_email"></ion-input>
+                            </ion-item>
+                            <div *ngIf="formEdit.controls.user_email.hasError('invalidEmail') && submitAttempt" class="err-danger">
+                                {{ 'errorMessage.emailNotValid'|translate }}
+                            </div>
+                            <ion-item class="change-pass">
+                                <ion-label [navPush]="ChangepasswordPage">
+                                    <span class="icomoon-locked"></span> {{'profile.change_pass' | translate}}</ion-label>
+                            </ion-item>
+                        </ion-list>
+
+                        <button type="submit" class="form-custom-submit" ion-button full (click)="save()">{{'profile.done' | translate}}</button>
+                    </form>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+</ion-content>
+<ion-footer>
+    <footer></footer>
+</ion-footer>

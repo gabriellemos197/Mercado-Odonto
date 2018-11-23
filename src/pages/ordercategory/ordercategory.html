@@ -1,0 +1,31 @@
+<ion-content>
+    <div class="modal-wrap">
+        <div class="modal-confirm">
+            <div class="modal-title">
+                {{'home.chooseCate' | translate}}
+            </div>
+            <div class="modal-confirm-body">
+                <ion-list radio-group [(ngModel)]="defaultCategories" class="modal-list">
+                    <button ion-item class="radio-custom" (click)="defaultCategories=0">
+                        <ion-radio [value]="0"></ion-radio>
+                        <ion-label>{{'home.all' | translate}}</ion-label>
+                    </button>
+                    <div *ngFor="let item of parents">
+                        <button *ngIf="item.count > 0" ion-item class="radio-custom" (click)="defaultCategories=item.id">
+                            <ion-radio [value]="item.id"></ion-radio>
+                            <ion-label [innerHTML]="item.name"></ion-label>
+                        </button>
+                    </div>
+                </ion-list>
+            </div>
+            <div class="modal-confirm">
+                <button ion-button class="modal-cancel" (click)="dismiss()">
+                    {{'general.cancel' | translate}}
+                </button>
+                <button ion-button class="modal-ok" (click)="getData()">
+                    {{'general.ok' | translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+</ion-content>

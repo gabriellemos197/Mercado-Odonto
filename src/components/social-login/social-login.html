@@ -1,0 +1,10 @@
+<!-- Generated template for the SocialLoginComponent component -->
+<div>
+    <ion-spinner *ngIf="!loadedSocial" name="ios" class="spinner-loading"></ion-spinner>
+    <ion-list *ngIf="loadedSocial">
+        <div *ngFor="let item of listSocial">
+            <button ion-button (click)="socialLogin(item.code)">{{item.name}}</button>
+        </div>
+    </ion-list>
+    <button ion-button (click)="resetActiveSocial()">Reset social</button>
+</div>

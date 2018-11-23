@@ -1,0 +1,70 @@
+<ion-header>
+
+  <ion-navbar>
+    <div class="header-wrapper">    
+        <ion-title>{{'favorite.title' | translate}}</ion-title>
+        <button *ngIf="data && 0 < (data|ObjectToArray).length" class="favorite-clear-all" ion-button (click)="clear()">{{'favorite.clear.title'|translate}}</button>
+    </div>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+    <div [@fadeInLonger]="''" *ngIf="loaded && (data|ObjectToArray).length < 1" class="no-favorite" text-center>
+        <div class="icomoon-heart"></div>
+        <div class="no-favorite-title">{{'favorite.empty' | translate}}</div>
+        <div class="btn-primary" (click)="shop()">{{'favorite.shop' | translate}}</div>
+    </div>
+	<ion-grid no-padding class="pb-44" *ngIf="loaded && 0 < (data|ObjectToArray).length">
+        <div background-light class="block-search-product">
+            <ion-row>
+                <ion-col no-padding border-bottom-solid-1 col-6 border-right [@fadeInLonger]="''" *ngFor="let product of (data|ObjectToArray) | orderBy: 'name': 'desc'">
+                    <div class="favorite-clear" (click)="delete(product.id)"><span class="icomoon-trash"></span></div>
+                    <div class="product-small">
+                        <!-- <div *ngIf="product.date_created_gmt | isNew" class="new-label">
+                        <span>{{ 'home.new'|translate}}</span></div>
+                        <div class="sale-label" *ngIf="product.price < product.regular_price
+                            && product.type!='variable' && product.type!='grouped'">
+                            {{-((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</div> -->
+                        <div class="product-top" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                            <img  *ngIf="product.cellstore_images && product.cellstore_images[0].cellstore_square" [src]="product.cellstore_images[0].cellstore_square"/>
+                            <img  *ngIf="!product.cellstore_images || !product.cellstore_images[0].cellstore_square" src="assets/images/no-image.png"/>
+                        </div>
+                        <div class="product-price">
+                            <span class="new-price" [innerHTML]="product.price_html"></span>
+                        </div>
+                        <div class="product-name" [navPush]="DetailPage" [navParams]="{id:product.id}"
+                            [innerHTML]="product.name | truncate:[30]"></div>
+                        <div class="product-info" [ngClass]="{'hide-sale': hide_sale}" *ngIf=" product.average_rating || product.total_sales">
+                            <div class="product-rating" [ngClass]="{'hidden': product.average_rating==''}">
+                                <ion-icon name="icon-star" class="text-orange"></ion-icon>
+                                <span class="text-orange" *ngIf="product.average_rating">{{product.average_rating |number:'1.1-1'}}</span>
+                            </div>
+                            <div class="product-sold" [ngClass]="{'hidden': product.total_sales==''}">
+                                <span class="product-total-sold" *ngIf="product.total_sales">{{product.total_sales}}{{'home.sold' | translate}}</span>
+                            </div>
+                        </div>
+                        <div class="product-bottom">
+                            <div class="product-action" *ngIf="(product.in_stock && product.stock_quantity == null) || (product.in_stock && product.stock_quantity > 0) || product.backordered">
+                                <button *ngIf="product.type == 'simple'" (click)="quickAddCart(product, $event)" class="action-type action-cart">
+                                    <span class="icomoon-cart-add"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                                    {{'general.addToCart' | translate}}
+                                </button>
+                                <button *ngIf="product.type != 'simple'" [navPush]="DetailPage" [navParams]="{id:product.id}"
+                                    class="action-type action-choose">
+                                    {{'general.chooseOption' | translate}}
+                                </button>
+                                <span [ngClass]="{'active': inCart(product.id, cart)}" class="icomoon-cart-check"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></span>
+                            </div>
+                        </div>
+                    </div> 
+                    <!-- / .product-small -->
+                </ion-col>
+            </ion-row>
+        </div>
+	</ion-grid>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

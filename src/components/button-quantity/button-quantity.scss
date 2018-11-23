@@ -1,0 +1,46 @@
+button-quantity {
+	display:inline-block;
+	overflow:hidden;
+	.button-quantity-inner{
+		.button{
+			width: 24px;
+            height: 24px;
+            line-height: 24px;
+			padding:0;
+      		opacity: 1 !important;
+			background: $background-gray;
+			border-radius: 0;
+            color: $color-primary;
+            font-weight: 500;
+            font-size: 10px;
+
+            &.plus {
+                border-top-right-radius: 22px;
+                border-bottom-right-radius: 22px;
+            }
+
+            &.minus {
+                border-top-left-radius: 22px;
+                border-bottom-left-radius: 22px;
+            }
+
+            &[disabled],
+            &.disable {
+                color: $color-lighter-gray;
+            }
+		}
+		.value{
+      		background: #fff;
+			border:1px solid $background-gray;
+			width:40px;
+            height: 24px;
+            font-size: 15px;
+            appearance:none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 !important;
+            font-weight: 500;
+		}
+	}
+}

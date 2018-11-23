@@ -1,0 +1,22 @@
+<div *ngIf="0 < parents.length">
+	<ion-grid no-padding>
+		<div *ngFor = "let item of parents" >
+			<ion-row (click)="checkOpen(item.id)" [ngClass]="{'active-categories':check_id[item.id]}">
+	        	<ion-col col-2 padding-5><img [src] = "item.image.src"/></ion-col>
+	        	<ion-col col-8 relative padding-5><span absolute secondary class="name-categories">{{item.name}}</span></ion-col>
+	        	<ion-col col-2 relative padding-5 secondary>
+	        		<ion-icon *ngIf="!check_id[item.id]" absolute class="icon-categories" name="md-add"></ion-icon>
+	        		<ion-icon *ngIf="check_id[item.id]" absolute class="icon-categories icon-active" name="md-remove"></ion-icon>
+	        	</ion-col>
+	      	</ion-row>
+	      	<div *ngIf="check_id[item.id]">
+				<div *ngFor = "let child of childs" secondary (click)="openPage('DetailcategoryPage')">
+					<ion-row *ngIf="0 < childs.length && item.id == child.parent">
+						<ion-col col-10><span class="name-childcate">{{child.name}}</span></ion-col>
+						<ion-col col-2 ><ion-icon float-right class="icon-child-more" name="ios-arrow-forward"></ion-icon></ion-col>
+			      	</ion-row>
+		      	</div>
+	      	</div>
+		</div>
+    </ion-grid>
+</div>

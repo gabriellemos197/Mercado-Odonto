@@ -1,0 +1,7 @@
+<ion-row class="button-quantity-inner" wrap center>
+	<button no-margin ion-button clear [disabled]="innerValue<=min" (click)="minus()" class="disable-hover button-cellquanty minus">
+        <span class="icomoon-substract"></span> 
+    </button>
+	<input text-center class="value" #input no-margin [(ngModel)]="value" type="number" (blur)="inputBlur(true)" />
+	<button no-margin ion-button clear (click)="plus()" [disabled]="max<=innerValue" class="disable-hover button-cellquanty plus"><span class="icomoon-plus"></span> </button>
+</ion-row>  

@@ -1,0 +1,19 @@
+<ion-header>
+
+    <ion-navbar>
+    	<div class="header-wrapper">
+	    	<ion-title>{{'account.about_us' | translate}}</ion-title>
+	        <ion-buttons end>
+	            <button ion-button secondary right font-size-20 [navPush]="ContactusPage" [navParams]="{ scrollMap: true}">
+	                <ion-icon light name="icon-location-black"></ion-icon>
+	            </button>
+	        </ion-buttons>	
+    	</div>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <div secondary [@fadeInLonger]="''" [innerHTML]="textStatic.cellstore_description_about_us"></div>
+</ion-content>

@@ -1,0 +1,196 @@
+<ion-header #header>
+
+    <ion-navbar no-padding hideBackButton>
+        <div class="header-wrapper">
+            <ion-title>
+                <ion-searchbar placeholder="{{'search.title'|translate}}" [(ngModel)]="keyword" (ionFocus)="checkFilter=false;checkMenu=false" (keyup.enter)="search()"></ion-searchbar>
+                <div class="cancel_search" (click)="backPage()">{{'search.cancel'| translate}}</div>
+            </ion-title>         
+        </div>
+    </ion-navbar>
+
+    <div class="header-filters" [ngClass]="{'active' : products.length > 0}">
+        <button class="filters-bar" [ngClass]="{'active': checkMenu}" ion-button (click)="showMenu()">
+            <ion-icon color-toolbar name="icon-menucat"></ion-icon>
+        </button>
+        <div class="filters">
+            <button ion-button [ngClass]="{'active': checkSort}" class="disable-hover" (click)="showSort()">
+                <ion-icon color-toolbar name="icon-sortaz"></ion-icon>
+            </button>
+            <button ion-button [ngClass]="{'active': checkFilter}" class="disable-hover" (click)="showFilter()">
+                <ion-icon color-toolbar name="icon-filter"></ion-icon>
+            </button>
+        </div>
+    </div>
+    <!-- / .header-filters -->
+</ion-header>
+
+<div (swipe)="swipeActiveHandler($event)">
+    <div class="filters-overlay" [ngClass]="{'active': checkMenu}" [style.top]="fillers_popup_top" (click)="showMenu()"></div>
+    <div class="filters-popup" [ngClass]="{'active': checkMenu}">
+        <div class="filters-content filters-menu">
+            <div class="filters-container" *ngIf="categories && categories.length >0">
+                <ion-list class="list-all">
+                    <ion-item class="item-checkbox-right all">
+                        <ion-label [innerHTML]="'search.all'|translate"></ion-label>
+                        <ion-checkbox (ionChange)="updateCategory('0', $event)"></ion-checkbox>
+                    </ion-item>
+                </ion-list>
+
+                <ion-list *ngFor="let category of categories|orderBy: 'name'">
+                    <ion-item class="item-checkbox-right">
+                        <ion-label [innerHTML]="category.name"></ion-label>
+                        <ion-checkbox (ionChange)="updateCategory(category.id, $event)"></ion-checkbox>
+                    </ion-item>
+                </ion-list>
+            </div>
+        </div>
+        <button class="btn-filter" (click)="search(true)">
+            {{'general.done'|translate}}
+        </button>
+    </div>
+</div>
+<!-- / .filters-popup -->
+
+<div (swipe)="swipeActiveHandler($event)">
+    <div class="filters-overlay" [ngClass]="{'active': checkFilter}" [style.top]="fillers_popup_top" (click)="showFilter()"></div>
+    <div class="filters-popup filters-right" [ngClass]="{'active': checkFilter}">
+        <div class="filters-content filters-features">
+            <div class="filters-container">
+                <div class="filters-title"> {{'categories.filter' | translate}}
+                    <span class="icomoon-reload" (click)="reset(true)"></span>
+                </div>
+                <hide-show color="light">
+                    <span *ngIf="dir_mode=='ltr'" this-title class="range-price">
+                        <b>{{'categories.price_range'|translate}}</b>
+                        <span>{{range.lower|price}}</span>
+                    <span *ngIf="0<range.upper"> - {{range.upper|price}}</span>
+                    </span>
+                    <span *ngIf="dir_mode!='ltr'" dir="ltr" this-title class="range-price">
+                        <span *ngIf="0<range.upper">{{range.upper|price}} - </span>
+                    <span>{{range.lower|price}}</span>
+                    <b>{{'categories.price_range'|translate}}</b>
+                    </span>
+                    <ion-range this-content dualKnobs="true" max="1000" [(ngModel)]="range">
+                    </ion-range>
+                </hide-show>
+                <hide-show color="light" *ngFor="let attr of attributes.attributes" class="filter-attribute">
+                    <span this-title class="attributes-title">
+                        <b *ngIf="dir_mode != 'rtl'" text-capitalize [innerHTML]="attr.name + ':'"></b>
+                        <b *ngIf="dir_mode == 'rtl'" text-capitalize [innerHTML]="':' + attr.name"></b>
+                        <span *ngFor="let item of filter.value[attr.slug].select, let i = index">
+                            <span *ngIf="(i + 1) !=  filter.value[attr.slug].select.length">{{item}}, </span>
+                    <span *ngIf="(i + 1) ==  filter.value[attr.slug].select.length">{{item}}</span>
+                    </span>
+                    </span>
+                    <ion-row wrap this-content padding-bottom>
+                        <ion-col *ngFor="let term of attr.term" col-6 relative class="filter-checkbox">
+                            <ion-item no-padding>
+                                <ion-label class="name-attr">{{term.name}}</ion-label>
+                                <ion-checkbox [(ngModel)]="filter.value[attr.slug][term.slug]" (ngModelChange)="checkFilterValue(attr.slug,term.name,filter.value[attr.slug][term.slug])"></ion-checkbox>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                </hide-show>
+                <ul class="filter_toggle">
+                    <li>
+                        <span>{{'categories.filter_sale'|translate}}</span>
+                        <ion-toggle [(ngModel)]="filter_sale"></ion-toggle>
+                    </li>
+                    <li>
+                        <span>{{'categories.filter_stock'|translate}}</span>
+                        <ion-toggle [(ngModel)]="filter_stock"></ion-toggle>
+                    </li>
+                    <li>
+                        <span>{{'categories.filter_new'|translate}}</span>
+                        <ion-toggle [(ngModel)]="filter_new"></ion-toggle>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <button class="btn-filter" (click)="search(true)">
+            {{'categories.apply'|translate}}
+        </button>
+    </div>
+</div>
+<!-- / .filters-popup -->
+
+<div class="page-loading" *ngIf="!loaded_data">
+    <ion-spinner name="ios"></ion-spinner>
+</div> 
+
+<ion-content [ngClass]="{'page-no-results':products.length == 0}">
+    <ion-refresher *ngIf="products.length > 0" class="hide-spinner" (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="ios-refresh" pullingText="" refreshingSpinner="circles" refreshingText="">
+        </ion-refresher-content>
+    </ion-refresher>
+    <div (swipe)="swipe($event)">
+        <div *ngIf="products.length > 0" class="search-wrapper">
+            <div class="block-search-product">
+                <ion-row>
+                    <ion-col [@fadeIn]="''" col-6 no-padding border-right border-bottom-solid-1 *ngFor="let product of products">
+                        <div class="product-small">
+                            <div *ngIf="product.date_created_gmt | isNew" class="new-label">
+                                <span>{{ 'home.new'|translate}}</span>
+                            </div>
+                            <div class="sale-label" *ngIf="product.price < product.regular_price
+                                && product.type!='variable' && product.type!='grouped'">
+                                {{-((product.regular_price - product.price)*100)/product.regular_price | number:'1.0-0'}}%</div>
+                            <div class="product-top" [navPush]="DetailPage" [navParams]="{id:product.id}">
+                                <img *ngIf="product.cellstore_images && product.cellstore_images[0].cellstore_square" [src]="product.cellstore_images[0].cellstore_square" />
+                                <img *ngIf="!product.cellstore_images || !product.cellstore_images[0].cellstore_square" src="assets/images/no-image.png" />
+                            </div>
+                            <div class="product-price">
+                                <span class="new-price" [innerHTML]="product.price_html"></span>
+                            </div>
+                            <div class="product-name" [navPush]="DetailPage" [navParams]="{id:product.id}" [innerHTML]="product.name | truncate:[30]"></div>
+                            <div class="product-info" [ngClass]="{'hide-sale': hide_sale}" *ngIf=" product.average_rating || product.total_sales">
+                                <div class="product-rating" [ngClass]="{'hidden': product.average_rating==''}">
+                                    <ion-icon name="icon-star" class="text-orange"></ion-icon>
+                                    <span class="text-orange" *ngIf="product.average_rating">{{product.average_rating |number:'1.1-1'}}</span>
+                                </div>
+                                <div class="product-sold" [ngClass]="{'hidden': product.total_sales==''}">
+                                    <span class="product-total-sold" *ngIf="product.total_sales">{{product.total_sales}}{{'home.sold' | translate}}</span>
+                                </div>
+                            </div>
+                            <div class="product-bottom">
+                                <div class="product-action" *ngIf="(product.in_stock && product.stock_quantity == null) || (product.in_stock && product.stock_quantity > 0) || product.backordered">
+                                    <button *ngIf="product.type == 'simple'" (click)="quickAddCart(product, $event)" class="action-type action-cart">
+                                        <span class="icomoon-cart-add"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></span>
+                                        {{'general.addToCart' | translate}}
+                                    </button>
+                                    <button *ngIf="product.type != 'simple'" [navPush]="DetailPage" [navParams]="{id:product.id}" class="action-type action-choose">
+                                        {{'general.chooseOption' | translate}}
+                                    </button>
+                                    <span [ngClass]="{'active': inCart(product.id, cart)}" class="icomoon-cart-check">
+                                        <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / .product-small -->
+                    </ion-col>
+                </ion-row>
+                <ion-infinite-scroll (ionInfinite)="load($event)">
+                    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+                </ion-infinite-scroll>
+            </div>
+        </div>
+    </div>
+
+
+    <div [@fadeIn]="''" *ngIf="checkResuilt && products.length < 1 " class="search-no-result">
+        <div width-100 light-gray text-center>
+            <ion-icon name="icon-searchresult"></ion-icon>
+        </div>
+        <div width-100 text-center>
+            <span font-size-17 secondary>{{'search.no_result' | translate}}</span>
+        </div>
+    </div>
+</ion-content>
+<ion-footer>
+    <footer #footer></footer>
+</ion-footer>

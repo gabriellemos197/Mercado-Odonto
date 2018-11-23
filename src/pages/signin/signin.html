@@ -1,0 +1,70 @@
+<ion-header *ngIf="!maintain">
+
+    <ion-navbar>
+        <div class="header-wrapper"> 
+            <ion-title>{{'login.title' | translate}}</ion-title>
+        </div>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <div *ngIf="loading" width-100 text-center class="spinnerlogin">
+        <ion-spinner margin-auto name="ios"></ion-spinner>
+    </div>
+    <div class="maintain-wrapper" [ngClass]="{'active': maintain}" *ngIf="!socialMode">
+        <div class="image">
+            <img src="assets/images/maintainance.jpg" alt="">
+        </div>
+        <div class="title">{{'maintainance.title' | translate }}</div>
+        <div class="msg">{{'maintainance.message' | translate }}</div>
+        <div class="msg">{{'maintainance.message2' | translate }}</div>
+
+        <form [formGroup]="formLogin" ng-submit="login()">
+            <ion-list class="form-custom form-login">
+                <ion-item>
+                    <ion-label>{{'login.Uname' | translate}}</ion-label>
+                    <ion-input type="text" (focus)="wrong_pass_username=false" formControlName="username"></ion-input>
+                </ion-item>
+                <div *ngIf="formLogin.controls.username.hasError('required') && submitAttempt" class="err-danger">
+                    {{ 'errorMessage.usernameRequired'|translate }}
+                </div>
+                <div class="password-control">
+                    <ion-item class="input-password">
+                        <ion-label>{{'login.pass' | translate}}</ion-label>
+                        <ion-input type="{{type}}" (focus)="wrong_pass_username=false" formControlName="password"></ion-input>
+                    </ion-item>
+                    <div class="control-icon" (click)="show_hide_Pass(); wrong_pass_username=false">
+                        <span class="icomoon-eyes-hidden" *ngIf="check"></span>
+                        <span class="icomoon-eyes-open" *ngIf="!check"></span>
+                    </div>
+                </div>
+                <div *ngIf="formLogin.controls.password.hasError('required') && submitAttempt" class="err-danger">
+                    {{ 'errorMessage.passRequired'|translate }}
+                </div>
+                <div *ngIf="wrong_pass_username" class="err-danger">
+                    {{ 'errorMessage.wrong_pass_username'|translate}}
+                </div>
+            </ion-list>
+            <button ion-button type="submit" class="form-custom-submit" (click)="login('normal')">{{'general.login' | translate}}</button>
+            <p class="signup-notice" font-size-15 gray text-align line-height-15 [navPush]="ForgotPage">{{'login.forgot_title' | translate}}</p>
+            <p class="text_quention_signup" *ngIf="allowRegister" font-size-15 gray text-align [navPush]="SignupPage">{{'login.signup' | translate}}
+                <a font-weight-500>{{'login.sign_in' | translate}}</a>
+            </p>
+        </form>
+        <div gray text-center *ngIf="!maintain && ((login_facebook && login_google) || login_facebook || login_google)">
+            <p><span>{{'login.loginwith'|translate}}</span></p>
+            <div width-100 class="social-login>">
+                <div width-50 in-line>
+                    <img class="social-icon" (click)="login('facebook')" src="assets/images/facebook.png" />
+                </div>
+                <div width-50 in-line>
+                    <img class="social-icon" (click)="loginGP()" src="assets/images/google.png" />
+                </div>
+            </div>
+        </div>
+        <div class="btn-exit" (click)="exitApp()">{{'maintainance.exit' | translate }}</div>
+    </div>
+   
+</ion-content>

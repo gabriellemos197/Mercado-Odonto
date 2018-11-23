@@ -1,0 +1,20 @@
+<root>
+	<file path="config.xml" >
+		<field name="PACKAGE_ID" label="App package" required="true"  type="string" rules="packageID" maxLength="" />
+		<field name="APP_VERSION" label="App version" required="true"  type="string" rules="string" maxLength="" />
+		<field name="APP_NAME" label="App name" required="true" type="string" rules="string" maxLength="50" />
+		<field name="APP_DESCRIPTION" label="App description" required="true"  type="string" rules="string" maxLength="" />
+		<field name="APP_EMAIL" label="Email app" required="true" type="string" rules="Email" maxLength="" />
+		<field name="AUTH_HREF" label="Auth href" required="true" type="string" rules="string" maxLength="" />
+		<field name="APP_AUTHOR" label="Author" required="true" type="string" rules="string" maxLength="" />
+	</file>
+	<file path="src/assets/js/setting.js" >
+		<field name="WORDPRESS_URL" label="Wordpress url (no '/' at the end)" required="true" type="string" rules="wordpressURL" maxLength="" />
+        <field name="ONESIGNAL_APP_ID" label="Onesignal App ID" required="true" type="string" rules="onesignalID" maxLength="" />
+		<field name="REQUEST_TIMEOUT" label="Request timeout(milliseconds)" type="string" rules="Number" maxLength="" />
+        <field name="NOTICE_TIMEOUT" label="Notice timeout(milliseconds)" type="string" rules="Number" maxLength="" />
+        <field name="SLIDE_TIME" label="Slide timeout(milliseconds)" type="string" rules="Number" maxLength="" />
+		<field name="HIDE_SALE" label="Hide sale" type="boolean" rules="boolean" />
+		<field name="HIDE_AVAILABLE_STOCK" label="Hide available stock" type="boolean" rules="boolean" />
+	</file>
+</root>

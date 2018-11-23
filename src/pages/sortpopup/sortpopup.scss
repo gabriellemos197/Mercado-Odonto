@@ -1,0 +1,91 @@
+page-sortpopup {
+    .scroll-content {overflow: hidden;}
+
+    .page-wrapper {
+        position: relative; 
+        padding-top: 41px;
+    }
+
+    .page-title {
+        border-top-right-radius: 15px;
+        border-top-left-radius: 15px;
+        font-size: 17px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 2;
+    }
+
+    .sort-options {
+        height: 189px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+	.list-categories{
+        .item-radio {
+            padding: 0 15px; 
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            flex-direction: row-reverse;
+
+            &:last-child > .item-inner {
+                border-bottom: none !important;
+            }
+
+            > .item-inner {
+                border-bottom: solid 1px #ebebeb !important;
+                padding: 0 !important;
+
+                > .input-wrapper {
+                    padding-left: 15px;
+                }
+            }
+        }
+
+        .radio {
+            margin: 0;
+            width: 14px;
+            height: 14px;
+            border: solid 1px $border-strong-gray;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+
+            &[checked="checked"] {
+                border-color: $border-primary;
+                
+                .radio-icon {
+                    background: $background-primary;
+                }
+            }
+        }
+        
+        .radio-icon  {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: transparent;
+            transition: all 0.3s ease;
+
+            .radio-inner {display: none;}
+        }
+
+        .item{
+            color: $color-gray;
+            padding: 0;
+		}
+	}
+
+	.close{
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: $color-light-gray;
+	}
+}

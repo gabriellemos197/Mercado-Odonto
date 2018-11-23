@@ -1,0 +1,25 @@
+page-ordercategory {
+    .modal-confirm {
+        .modal-title {
+            height: 70px;
+        }
+
+        .modal-confirm-body {
+            max-height: 160px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .modal-list {
+            padding-bottom: 30px;
+        }
+    }
+
+    > .content {
+        position: relative;
+    }
+
+    .scroll-content {
+        overflow: hidden;
+    }
+}

@@ -1,0 +1,31 @@
+<ion-content padding>
+    <div class="forgot-page-title">
+        <img src="assets/images/forgot.png" />
+        <div class="forgot-title">{{'login.forgot_password' | translate}}</div>
+        <div class="forgot-subtitle">{{'login.forgot_body' | translate}}</div>
+    </div>
+    <form [formGroup]="formForgot" ng-submit="forgot()">
+        <ion-list class="form-custom form-forgot-password">
+            <div class="input-envelope">
+                <ion-item>
+                    <ion-input type="text" (focus)="keyboard_show=true;username_not_exist=false" (blur)="keyboard_show=false" formControlName="username"
+                        placeholder="{{'login.forgot_placeholder' | translate}}"></ion-input>
+                </ion-item>
+                <!-- <span class="icomoon-envelope control-icon"></span> -->
+            </div>
+
+            <div *ngIf="formForgot.controls.username.hasError('required') && submitAttempt" class="err-danger">
+                {{ 'errorMessage.usernameRequired'|translate }}
+            </div>
+            <div *ngIf="username_not_exist && submitAttempt" class="err-danger">
+                {{ 'errorMessage.usernameNotExist'|translate }}
+            </div>
+        </ion-list>
+        <button ion-button type="submit" class="form-custom-submit" (click)="forgot()">{{'login.forgot_send' | translate}}</button>
+    </form>
+    <div class="forgot-back" (click)="backPage()" [ngClass]="{'relative': keyboard_show}">
+        <span class="icomoon-left-arrow"></span>
+        {{'login.backto' | translate}}
+    </div>
+
+</ion-content>

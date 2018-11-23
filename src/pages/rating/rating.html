@@ -1,0 +1,75 @@
+<ion-content class="rating-wrapper" background-light *ngIf="ready" [ngClass]="{'login': !guest}">
+    <div background-primary class="header-comment">
+        <div class="cmt-img">
+            <div class="cmt-avatar" *ngIf="!user.mobiconnector_avatar" [style.background-image]="'url(assets/images/account.png)'">
+            </div>
+            <div class="cmt-avatar" *ngIf="user.mobiconnector_avatar" [style.background-image]="'url(' + user.mobiconnector_avatar + ')'">
+            </div>
+        </div>
+        <div class="cmt-title">
+            <div class="cmt-by">{{'rating.title' | translate}}</div>
+            <div *ngIf="!guest" class="cmt-name">{{user.display_name}}</div>
+            <div *ngIf="guest" class="cmt-name">{{'rating.guest' | translate}}</div>
+        </div>
+        <ion-icon (click)="dismiss()" class="icon-close" light font-size-25 absolute name="md-close"></ion-icon>
+    </div>
+
+	<div class="rating-count" text-center>
+		<div class="stars">
+			<div *ngFor="let value of [1,2,3,4,5]" (click)="changeRating(value)">
+				<ion-icon  color-rating *ngIf="value <= ratingValue" name="icon-star"></ion-icon>
+				<ion-icon  rating-light-gray *ngIf="ratingValue < value || !ratingValue" name="icon-star"></ion-icon>
+			</div>
+        </div>
+        <div *ngIf="!emptyRating && ratingValue == 0" class="rating-count-title" gray>
+            {{'rating.rateCTA' | translate}}
+        </div>
+		<div *ngIf="!emptyRating && ratingValue == 1" class="rating-count-title" gray>
+			{{'rating.ratePoor' | translate}}
+        </div>
+        <div *ngIf="!emptyRating && ratingValue == 2" class="rating-count-title" gray>
+            {{'rating.rateFair' | translate}}
+        </div>
+        <div *ngIf="!emptyRating && ratingValue == 3" class="rating-count-title" gray>
+            {{'rating.rateGood' | translate}}
+        </div>
+        <div *ngIf="!emptyRating && ratingValue == 4" class="rating-count-title" gray>
+            {{'rating.rateVery' | translate}}
+        </div>
+        <div *ngIf="!emptyRating && ratingValue == 5" class="rating-count-title" gray>
+            {{'rating.rateExcellent' | translate}}
+        </div>
+        <div *ngIf="emptyRating && ratingValue == 0" class="rating-count-title err-danger">
+            {{'errorMessage.requiredRating'|translate}}
+        </div>
+        <form [formGroup]="formComment" ng-submit="rating()">
+            <ion-list class="form-comment">
+                <ion-item *ngIf="guest" [ngClass]="{'red': submitAttempt}">
+                    <ion-label><span class="icomoon-user"></span></ion-label>
+                    <ion-input  type="text" formControlName="namecustomer" 
+                    placeholder="{{'rating.name'|translate}}"></ion-input>
+                </ion-item>
+<!--                 <div *ngIf="formComment.controls.namecustomer.hasError('required') && submitAttempt" class="err-danger">
+                    {{ 'errorMessage.nameRequired'|translate }}
+                </div> -->
+                <ion-item *ngIf="guest" [ngClass]="{'red': submitAttempt}">
+                    <ion-label><span class="icomoon-envelope"></span></ion-label>
+                    <ion-input type="text" formControlName="emailcustomer"
+                    placeholder="{{'rating.email'|translate}}"></ion-input>
+                </ion-item>
+       <!--          <div *ngIf="formComment.controls.emailcustomer.hasError('required') && submitAttempt" class="err-danger">
+                    {{ 'errorMessage.emailRequired'|translate }}
+                </div> -->
+                <ion-textarea class="content-comment" placeholder="{{'rating.comment'|translate}}" formControlName="comment"></ion-textarea>
+                <div *ngIf="formComment.controls.comment.hasError('required') && submitAttempt" class="err-danger">
+                    {{'errorMessage.commentRequired'|translate}}
+                </div>
+            </ion-list>
+            <div class="rating-submit-wrapper">
+                <button type="submit" class="rating-count-submit" ion-button (click)="rating()">
+                    {{'rating.submit'|translate}}
+                </button>
+            </div>
+        </form>
+	</div>
+</ion-content>
